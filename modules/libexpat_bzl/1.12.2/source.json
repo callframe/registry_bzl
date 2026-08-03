@@ -1,0 +1,5 @@
+{
+  "url": "https://github.com/bazel-libs/libexpat_bzl/archive/refs/tags/1.12.2.tar.gz",
+  "integrity": "sha256-y+JlnpwR1f1megL2Un5Rsr/huqxDoWKHGwmgPvNte3Q=",
+  "strip_prefix": "libexpat_bzl-1.12.2"
+}

@@ -1,0 +1,7 @@
+{
+  "homepage": "https://github.com/bazel-libs/libexpat_bzl",
+  "maintainers": [],
+  "repository": ["github:bazel-libs/libexpat_bzl"],
+  "versions": ["1.12.2"],
+  "yanked_versions": {}
+}

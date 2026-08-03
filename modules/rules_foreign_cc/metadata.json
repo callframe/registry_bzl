@@ -1,0 +1,7 @@
+{
+  "homepage": "https://github.com/bazel-contrib/rules_foreign_cc",
+  "maintainers": [],
+  "repository": ["github:bazel-contrib/rules_foreign_cc"],
+  "versions": ["0.15.1.bcr.1"],
+  "yanked_versions": {}
+}

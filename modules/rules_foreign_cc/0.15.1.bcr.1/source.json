@@ -1,0 +1,5 @@
+{
+  "url": "https://github.com/bazel-contrib/rules_foreign_cc/archive/f68b351c4691e747f889dc5e4c2cac3cd3b66ea2.tar.gz",
+  "integrity": "sha256-fwXrnMSxxgDGQ+aSIciCAyRMytx1rijErelg8PB0LyY=",
+  "strip_prefix": "rules_foreign_cc-f68b351c4691e747f889dc5e4c2cac3cd3b66ea2"
+}

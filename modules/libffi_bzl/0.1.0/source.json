@@ -1,0 +1,5 @@
+{
+  "url": "https://github.com/bazel-libs/libffi_bzl/archive/refs/tags/0.1.0.tar.gz",
+  "integrity": "sha256-VKB/iJ+VNmMXFtxKp5wcwJojbKkS/ZP0h8Fr0/52Wm0=",
+  "strip_prefix": "libffi_bzl-0.1.0"
+}

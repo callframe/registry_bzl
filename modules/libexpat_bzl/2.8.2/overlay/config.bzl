@@ -2,7 +2,11 @@
 
 load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 load("@rules_cc//cc/common:cc_info.bzl", "CcInfo")
-load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
+load(
+    "@bazel_skylib//rules:common_settings.bzl",
+    "BuildSettingInfo",
+    "bool_flag",
+)
 load(":templates.bzl", "SubstitutionsInfo")
 
 _PACKAGE = "expat"
@@ -52,6 +56,21 @@ def _cmake_macros(macros):
         if value != None:
             result["#cmakedefine %s %s\n" % (key, value)] = _cmakedefine(key, value) + "\n"
     return result
+
+def expat_bool_flag(name, default, visibility = ["//visibility:public"]):
+    bool_flag(
+        name = name,
+        build_setting_default = default,
+        visibility = visibility,
+    )
+    native.config_setting(
+        name = name + "_enabled",
+        flag_values = {name: "True"},
+    )
+    native.config_setting(
+        name = name + "_disabled",
+        flag_values = {name: "False"},
+    )
 
 def expat_base_substitutions(version):
     version_release = _release(version)

@@ -1,0 +1,7 @@
+{
+  "homepage": "https://wayland.freedesktop.org/",
+  "maintainers": [],
+  "repository": ["gitlab:wayland/wayland"],
+  "versions": ["1.26.0"],
+  "yanked_versions": {}
+}

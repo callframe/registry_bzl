@@ -1,0 +1,62 @@
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+
+genrule(
+    name = "client_protocol_h",
+    srcs = ["wayland.xml"],
+    outs = ["wayland-client-protocol.h"],
+    cmd = "$(location //src:wayland-scanner) -s client-header $(location wayland.xml) $@",
+    tools = ["//src:wayland-scanner"],
+)
+
+genrule(
+    name = "client_protocol_core_h",
+    srcs = ["wayland.xml"],
+    outs = ["wayland-client-protocol-core.h"],
+    cmd = "$(location //src:wayland-scanner) -s client-header -c $(location wayland.xml) $@",
+    tools = ["//src:wayland-scanner"],
+)
+
+genrule(
+    name = "server_protocol_h",
+    srcs = ["wayland.xml"],
+    outs = ["wayland-server-protocol.h"],
+    cmd = "$(location //src:wayland-scanner) -s server-header $(location wayland.xml) $@",
+    tools = ["//src:wayland-scanner"],
+)
+
+genrule(
+    name = "server_protocol_core_h",
+    srcs = ["wayland.xml"],
+    outs = ["wayland-server-protocol-core.h"],
+    cmd = "$(location //src:wayland-scanner) -s server-header -c $(location wayland.xml) $@",
+    tools = ["//src:wayland-scanner"],
+)
+
+genrule(
+    name = "protocol_c",
+    srcs = ["wayland.xml"],
+    outs = ["wayland-protocol.c"],
+    cmd = "$(location //src:wayland-scanner) -s public-code $(location wayland.xml) $@",
+    tools = ["//src:wayland-scanner"],
+    visibility = ["//src:__pkg__"],
+)
+
+cc_library(
+    name = "client_headers",
+    hdrs = [
+        ":client_protocol_core_h",
+        ":client_protocol_h",
+    ],
+    strip_include_prefix = "/protocol",
+    visibility = ["//src:__pkg__"],
+)
+
+cc_library(
+    name = "server_headers",
+    hdrs = [
+        ":server_protocol_core_h",
+        ":server_protocol_h",
+    ],
+    strip_include_prefix = "/protocol",
+    visibility = ["//src:__pkg__"],
+)

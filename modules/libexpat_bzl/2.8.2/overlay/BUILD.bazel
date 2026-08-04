@@ -1,7 +1,6 @@
 load("@bazel_skylib//lib:selects.bzl", "selects")
 load(
     "@bazel_skylib//rules:common_settings.bzl",
-    "bool_flag",
     "int_flag",
     "string_flag",
 )
@@ -16,6 +15,7 @@ load(
     "SHARED_LIB_LINKOPTS",
     "SHARED_LIB_NAME",
     "expat_config",
+    "expat_bool_flag",
     "expat_base_substitutions",
 )
 load(":templates.bzl", "expand_config_template")
@@ -24,21 +24,6 @@ UNSUPPORTED = """%s supports x86, x64, arm32 and arm64 on linux, windows,
 freebsd, openbsd and netbsd, and x64 and arm64 on macos.""" % module_name()
 
 # --- build settings --------------------------------------------------------
-
-def expat_bool_flag(name, default, visibility = ["//visibility:public"]):
-    bool_flag(
-        name = name,
-        build_setting_default = default,
-        visibility = visibility,
-    )
-    native.config_setting(
-        name = name + "_enabled",
-        flag_values = {name: "True"},
-    )
-    native.config_setting(
-        name = name + "_disabled",
-        flag_values = {name: "False"},
-    )
 
 expat_bool_flag(name = "attr_info", default = False)
 expat_bool_flag(name = "large_size", default = False)

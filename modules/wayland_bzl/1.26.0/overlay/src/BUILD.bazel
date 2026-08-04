@@ -1,0 +1,170 @@
+load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load(
+    "//:config.bzl",
+    "COMMON_COPTS",
+    "LINUX_SRCS",
+    "wayland_version_substitutions",
+)
+load("//:templates.bzl", "expand_template")
+
+UNSUPPORTED = """%s supports Wayland libraries on Linux.
+BSD needs epoll-shim, which is not provided by this registry module.""" % module_name()
+
+# --- generated files -------------------------------------------------------
+
+expand_template(
+    name = "wayland_version_h",
+    out = "wayland-version.h",
+    substitutions = wayland_version_substitutions(module_version()),
+    template = "wayland-version.h.in",
+)
+
+# --- headers ---------------------------------------------------------------
+
+cc_library(
+    name = "base_headers",
+    hdrs = [
+        ":wayland_version_h",
+        "wayland-util.h",
+    ],
+    strip_include_prefix = "/src",
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "client_headers",
+    hdrs = [
+        ":wayland_version_h",
+        "wayland-client-core.h",
+        "wayland-client.h",
+        "wayland-util.h",
+    ],
+    deps = [
+        ":base_headers",
+        "//protocol:client_headers",
+    ],
+    strip_include_prefix = "/src",
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "server_headers",
+    hdrs = [
+        ":wayland_version_h",
+        "wayland-server-core.h",
+        "wayland-server.h",
+        "wayland-util.h",
+    ],
+    deps = [
+        ":base_headers",
+        "//protocol:server_headers",
+    ],
+    strip_include_prefix = "/src",
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "internal_headers",
+    hdrs = [
+        "//:config_h",
+        "timespec-util.h",
+        "wayland-os.h",
+        "wayland-private.h",
+        "wayland-server-private.h",
+    ],
+)
+
+# --- scanner ---------------------------------------------------------------
+
+cc_library(
+    name = "scanner_objects",
+    srcs = [
+        ":wayland_version_h",
+        "scanner.c",
+        "wayland-util.c",
+    ],
+    copts = COMMON_COPTS + ["-include", "config.h"],
+    deps = [
+        ":base_headers",
+        ":internal_headers",
+        "//:config",
+        "@libexpat_bzl//:libexpat",
+    ],
+)
+
+cc_binary(
+    name = "wayland-scanner",
+    deps = [":scanner_objects"],
+    visibility = ["//visibility:public"],
+)
+
+# --- objects ---------------------------------------------------------------
+
+cc_library(
+    name = "util_objects",
+    srcs = ["wayland-util.c"] + select(LINUX_SRCS, no_match_error = UNSUPPORTED),
+    copts = COMMON_COPTS,
+    deps = [":client_headers"],
+    implementation_deps = [":internal_headers"],
+)
+
+cc_library(
+    name = "private_objects",
+    srcs = [
+        "connection.c",
+        "wayland-os.c",
+    ] + select(LINUX_SRCS, no_match_error = UNSUPPORTED),
+    copts = COMMON_COPTS,
+    deps = [
+        ":client_headers",
+        ":util_objects",
+        "//:config",
+        "@libffi_bzl//:libffi",
+    ],
+    implementation_deps = [":internal_headers"],
+)
+
+cc_library(
+    name = "client_objects",
+    srcs = [
+        "//protocol:protocol_c",
+        "wayland-client.c",
+    ] + select(LINUX_SRCS, no_match_error = UNSUPPORTED),
+    copts = COMMON_COPTS,
+    linkopts = ["-pthread"],
+    deps = [
+        ":client_headers",
+        ":private_objects",
+        ":util_objects",
+        "//:config",
+        "@libffi_bzl//:libffi",
+    ],
+    implementation_deps = [":internal_headers"],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "server_objects",
+    srcs = [
+        "//protocol:protocol_c",
+        "event-loop.c",
+        "wayland-server.c",
+        "wayland-shm.c",
+    ] + select(LINUX_SRCS, no_match_error = UNSUPPORTED),
+    copts = COMMON_COPTS,
+    linkopts = [
+        "-ldl",
+        "-lm",
+        "-pthread",
+    ],
+    deps = [
+        ":private_objects",
+        ":server_headers",
+        ":util_objects",
+        "//:config",
+        "@libffi_bzl//:libffi",
+    ],
+    implementation_deps = [":internal_headers"],
+    visibility = ["//visibility:public"],
+)

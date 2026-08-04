@@ -1,0 +1,39 @@
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load(
+    "//:config.bzl",
+    "COMMON_COPTS",
+    "CURSOR_ICONDIR",
+    "LINUX_SRCS",
+)
+
+UNSUPPORTED = """%s supports Wayland cursor on Linux.
+BSD needs epoll-shim, which is not provided by this registry module.""" % module_name()
+
+cc_library(
+    name = "headers",
+    hdrs = ["wayland-cursor.h"],
+    strip_include_prefix = "/cursor",
+    visibility = ["//visibility:public"],
+    deps = ["//src:client_headers"],
+)
+
+cc_library(
+    name = "objects",
+    hdrs = [
+        "cursor-data.h",
+        "os-compatibility.h",
+        "xcursor.h",
+    ],
+    srcs = [
+        "os-compatibility.c",
+        "wayland-cursor.c",
+        "xcursor.c",
+    ] + select(LINUX_SRCS, no_match_error = UNSUPPORTED),
+    copts = COMMON_COPTS + ["-DICONDIR=\\\"%s\\\"" % str(CURSOR_ICONDIR)],
+    deps = [
+        ":headers",
+        "//:config",
+        "//src:client_headers",
+    ],
+    visibility = ["//visibility:public"],
+)

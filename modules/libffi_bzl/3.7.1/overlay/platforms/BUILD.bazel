@@ -1,0 +1,163 @@
+"""The host cases of configure.host, as config settings.
+
+32-bit x86 and 32-bit ARM each have two constraint values that mean the same
+thing to libffi.
+"""
+
+load("@bazel_skylib//lib:selects.bzl", "selects")
+
+package(default_visibility = ["//:__pkg__"])
+
+selects.config_setting_group(
+    name = "x86_32_cpu",
+    match_any = [
+        "@platforms//cpu:x86_32",
+        "@platforms//cpu:i386",
+    ],
+)
+
+selects.config_setting_group(
+    name = "arm_cpu",
+    match_any = [
+        "@platforms//cpu:arm",
+        "@platforms//cpu:armv7",
+    ],
+)
+
+# configure.host's 32-bit Apple hosts are X86_DARWIN and iOS ARM, neither of
+# which is a macOS userland any more.
+selects.config_setting_group(
+    name = "not_macos",
+    match_any = [
+        "@platforms//os:linux",
+        "@platforms//os:windows",
+        "@platforms//os:freebsd",
+        "@platforms//os:openbsd",
+        "@platforms//os:netbsd",
+    ],
+)
+
+selects.config_setting_group(
+    name = "x86_32",
+    match_all = [
+        ":x86_32_cpu",
+        ":not_macos",
+    ],
+)
+
+selects.config_setting_group(
+    name = "arm",
+    match_all = [
+        ":arm_cpu",
+        ":not_macos",
+    ],
+)
+
+selects.config_setting_group(
+    name = "unix",
+    match_any = [
+        "@platforms//os:linux",
+        "@platforms//os:macos",
+        "@platforms//os:freebsd",
+        "@platforms//os:openbsd",
+        "@platforms//os:netbsd",
+    ],
+)
+
+selects.config_setting_group(
+    name = "unix_x86_64",
+    match_all = [
+        ":unix",
+        "@platforms//cpu:x86_64",
+    ],
+)
+
+selects.config_setting_group(
+    name = "unix_x86_32",
+    match_all = [
+        ":unix",
+        ":x86_32",
+    ],
+)
+
+selects.config_setting_group(
+    name = "unix_arm64",
+    match_all = [
+        ":unix",
+        "@platforms//cpu:arm64",
+    ],
+)
+
+selects.config_setting_group(
+    name = "unix_arm",
+    match_all = [
+        ":unix",
+        ":arm",
+    ],
+)
+
+selects.config_setting_group(
+    name = "windows_x86_64",
+    match_all = [
+        "@platforms//os:windows",
+        "@platforms//cpu:x86_64",
+    ],
+)
+
+selects.config_setting_group(
+    name = "windows_x86_32",
+    match_all = [
+        "@platforms//os:windows",
+        ":x86_32",
+    ],
+)
+
+selects.config_setting_group(
+    name = "windows_arm64",
+    match_all = [
+        "@platforms//os:windows",
+        "@platforms//cpu:arm64",
+    ],
+)
+
+selects.config_setting_group(
+    name = "windows_arm",
+    match_all = [
+        "@platforms//os:windows",
+        ":arm",
+    ],
+)
+
+selects.config_setting_group(
+    name = "macos_arm64",
+    match_all = [
+        "@platforms//os:macos",
+        "@platforms//cpu:arm64",
+    ],
+)
+
+# i?86 freebsd and openbsd get their own target; netbsd is not special-cased
+# upstream and falls through to i?86-*-*.
+selects.config_setting_group(
+    name = "x86_freebsd",
+    match_all = [
+        ":x86_32",
+        ":freebsd_or_openbsd",
+    ],
+)
+
+selects.config_setting_group(
+    name = "freebsd_or_openbsd",
+    match_any = [
+        "@platforms//os:freebsd",
+        "@platforms//os:openbsd",
+    ],
+)
+
+selects.config_setting_group(
+    name = "gnu_compiler",
+    match_any = [
+        "@rules_cc//cc/compiler:gcc",
+        "@rules_cc//cc/compiler:clang",
+    ],
+)

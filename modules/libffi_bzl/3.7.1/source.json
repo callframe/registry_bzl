@@ -1,9 +1,12 @@
 {
-  "url": "https://github.com/libffi/libffi/releases/download/v3.4.7/libffi-3.4.7.tar.gz",
-  "integrity": "sha256-E4YH3uJovezzdK35FEwA6DnjhUH3XySh/PGLeP2kiy0=",
-  "strip_prefix": "libffi-3.4.7",
+  "url": "https://github.com/libffi/libffi/releases/download/v3.7.1/libffi-3.7.1.tar.gz",
+  "integrity": "sha256-1emmY43b0lE921RRjrZ+S75vpwe8wBwQ9iEvCgiNgZ0=",
+  "strip_prefix": "libffi-3.7.1",
   "overlay": {
-    "BUILD.bazel": "sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",
-    "MODULE.bazel": "sha256-5035ebbRcuSw5+aIng72Xr4cFDY1w8ToJ/08QwTMlrE="
+    "BUILD.bazel": "sha256-7ClHZq96BmNBN4rIOK7HobBNqV9zF6xf95U0qHOjFL4=",
+    "MODULE.bazel": "sha256-MXoOMF3W7OkbU7JxIOj0XnzJAbi122OzMn2zdFmwcL0=",
+    "config.bzl": "sha256-xAJh28HoOZrblQHLtmb+oZC3tp8KgZHQ6vwlsCi/P2A=",
+    "msvc_asm.bzl": "sha256-q4nqZ1GZZ8ZhKTIiL3zNyVAf8Ioch/5R9EvZa91QFPk=",
+    "platforms/BUILD.bazel": "sha256-SDvqq5SCRo14FN6OMdaO5rxCGRQH7n4vJf7gDvtWdWE="
   }
 }

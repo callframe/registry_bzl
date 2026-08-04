@@ -1,38 +1,282 @@
 load("@bazel_skylib//lib:selects.bzl", "selects")
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
+load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
 load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
-load("@rules_cc//cc:defs.bzl", "cc_library")
-load("libffi.bzl", "substitutions")
+load("@rules_cc//cc:cc_import.bzl", "cc_import")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("@rules_cc//cc:cc_shared_library.bzl", "cc_shared_library")
+load(
+    ":config.bzl",
+    "FFICONFIG_BY_CPU",
+    "FFICONFIG_BY_OS",
+    "FFICONFIG_MACOS_ARM64",
+    "FFICONFIG_WINDOWS_32BIT",
+    "FFI_H_BY_CPU",
+    "FFI_H_BY_WINDOWS_CPU",
+    "FFI_H_MACOS_ARM64",
+    "FFI_H_X86_FREEBSD",
+    "SHARED_LIB_LINKOPTS",
+    "SHARED_LIB_NAME",
+    "ffi_h",
+    "fficonfig",
+)
+load(":msvc_asm.bzl", "msvc_asm")
 
-# WIP: not finished yet
+UNSUPPORTED = """%s supports x86_64, x86_32, arm64 and arm on linux, windows,
+freebsd, openbsd and netbsd, and x86_64 and arm64 on macos. Windows needs a
+cl-compatible compiler whose assembler speaks MASM.""" % module_name()
 
-FFI_H_MACOS = {
-    "@VERSION@": module_version(),
-    "@TARGET@": "AARCH64",
-    "@HAVE_LONG_DOUBLE@": "0",
-} # jump tables?
+# --- linkage ---------------------------------------------------------------
+# ffi.h needs the answer while MSVC compiles, which is before Bazel settles
+# linkage, so it has to be a flag.
+
+string_flag(
+    name = "linkage",
+    build_setting_default = "dynamic",
+    values = [
+        "dynamic",
+        "static",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+config_setting(
+    name = "static_linkage",
+    flag_values = {":linkage": "static"},
+)
+
+config_setting(
+    name = "dynamic_linkage",
+    flag_values = {":linkage": "dynamic"},
+)
+
+selects.config_setting_group(
+    name = "windows_static",
+    match_all = [
+        "@platforms//os:windows",
+        ":static_linkage",
+    ],
+)
+
+selects.config_setting_group(
+    name = "windows_dynamic",
+    match_all = [
+        "@platforms//os:windows",
+        ":dynamic_linkage",
+    ],
+)
+
+# --- generated headers -----------------------------------------------------
 
 expand_template(
-    name = "libffi_h",
+    name = "ffi_h",
     out = "include/ffi.h",
-    substitutions = selects.with_or(
-        {
-            ("@platforms//cpu:x86_64", "@platforms//os:macos"): substitutions({
-                    
-            }),
-        },
-        no_match_error = "Target platform is not supported by libffi_bzl/libffi",
-    ),
+    substitutions = ffi_h(module_version()) |
+                    select(FFI_H_BY_CPU, no_match_error = UNSUPPORTED) |
+                    select(FFI_H_X86_FREEBSD) |
+                    select(FFI_H_BY_WINDOWS_CPU) |
+                    select(FFI_H_MACOS_ARM64),
     template = "include/ffi.h.in",
 )
 
+expand_template(
+    name = "fficonfig_h",
+    out = "include/fficonfig.h",
+    substitutions = fficonfig(module_version()) |
+                    select(FFICONFIG_BY_CPU, no_match_error = UNSUPPORTED) |
+                    select(FFICONFIG_BY_OS, no_match_error = UNSUPPORTED) |
+                    selects.with_or(FFICONFIG_WINDOWS_32BIT) |
+                    select(FFICONFIG_MACOS_ARM64),
+    template = "fficonfig.h.in",
+)
+
+# configure.ac copies this one instead of generating it.
+copy_file(
+    name = "ffitarget_h",
+    src = selects.with_or(
+        {
+            ("@platforms//cpu:x86_64", "//platforms:x86_32"): "src/x86/ffitarget.h",
+            "@platforms//cpu:arm64": "src/aarch64/ffitarget.h",
+            "//platforms:arm": "src/arm/ffitarget.h",
+        },
+        no_match_error = UNSUPPORTED,
+    ),
+    out = "include/ffitarget.h",
+)
+
+# --- MSVC assembly ---------------------------------------------------------
+
+msvc_asm(
+    name = "win64_intel",
+    src = "src/x86/win64_intel.S",
+    hdrs = ["src/x86/asmnames.h"],
+    deps = [
+        ":headers",
+        ":internal_headers",
+    ],
+)
+
+msvc_asm(
+    name = "sysv_intel",
+    src = "src/x86/sysv_intel.S",
+    hdrs = ["src/x86/internal.h"],
+    deps = [
+        ":headers",
+        ":internal_headers",
+    ],
+)
+
+msvc_asm(
+    name = "win64_armasm",
+    src = "src/aarch64/win64_armasm.S",
+    hdrs = ["src/aarch64/internal.h"],
+    defines = ["_M_ARM64"],
+    deps = [
+        ":headers",
+        ":internal_headers",
+    ],
+)
+
+msvc_asm(
+    name = "sysv_msvc_arm32",
+    src = "src/arm/sysv_msvc_arm32.S",
+    hdrs = ["src/arm/internal.h"],
+    defines = ["_M_ARM"],
+    deps = [
+        ":headers",
+        ":internal_headers",
+    ],
+)
+
+# --- the library -----------------------------------------------------------
+
 cc_library(
-    name = "libffi",
+    name = "headers",
     hdrs = [
-        "include/ffi_cfi.h",
-        "include/tramp.h",
-        "include/ffi_common.h",
-        ":libffi_h",
+        ":ffi_h",
+        ":ffitarget_h",
     ],
     includes = ["include"],
+    visibility = ["//visibility:public"],
+)
+
+# noinst_HEADERS: built against, never installed.
+cc_library(
+    name = "internal_headers",
+    hdrs = [
+        "include/ffi_cfi.h",
+        "include/ffi_common.h",
+        "include/tramp.h",
+        ":fficonfig_h",
+    ],
+)
+
+COMMON_SOURCES = [
+    "src/closures.c",
+    "src/java_raw_api.c",
+    "src/prep_cif.c",
+    "src/raw_api.c",
+    "src/tramp.c",
+    "src/types.c",
+]
+
+cc_library(
+    name = "objects",
+    srcs = COMMON_SOURCES + select({
+        "//platforms:unix_x86_64": [
+            "src/x86/asmnames.h",
+            "src/x86/ffi64.c",
+            "src/x86/ffiw64.c",
+            "src/x86/internal64.h",
+            "src/x86/unix64.S",
+            "src/x86/win64.S",
+        ],
+        "//platforms:unix_x86_32": [
+            "src/x86/ffi.c",
+            "src/x86/internal.h",
+            "src/x86/sysv.S",
+        ],
+        "//platforms:unix_arm64": [
+            "src/aarch64/ffi.c",
+            "src/aarch64/internal.h",
+            "src/aarch64/sysv.S",
+        ],
+        "//platforms:unix_arm": [
+            "src/arm/ffi.c",
+            "src/arm/internal.h",
+            "src/arm/sysv.S",
+        ],
+        "//platforms:windows_x86_64": [
+            "src/x86/ffiw64.c",
+            ":win64_intel",
+        ],
+        "//platforms:windows_x86_32": [
+            "src/x86/ffi.c",
+            "src/x86/internal.h",
+            ":sysv_intel",
+        ],
+        "//platforms:windows_arm64": [
+            "src/aarch64/ffi.c",
+            "src/aarch64/internal.h",
+            ":win64_armasm",
+        ],
+        "//platforms:windows_arm": [
+            "src/arm/ffi.c",
+            "src/arm/internal.h",
+            ":sysv_msvc_arm32",
+        ],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
+    # Unwinding passes through closure callbacks, so this C code needs
+    # unwind tables.
+    copts = select({
+        "//platforms:gnu_compiler": ["-fexceptions"],
+        "//conditions:default": [],
+    }),
+    # ffi.h picks its __declspec from these, so consumers must see what we
+    # compiled with.
+    defines = select({
+        ":windows_static": ["FFI_STATIC_BUILD"],
+        "//conditions:default": [],
+    }),
+    local_defines = select({
+        ":windows_dynamic": ["FFI_BUILDING_DLL"],
+        "//conditions:default": [],
+    }),
+    textual_hdrs = ["src/dlmalloc.c"],
+    deps = [":headers"],
+    implementation_deps = [":internal_headers"],
+)
+
+cc_shared_library(
+    name = "shared",
+    shared_lib_name = select(SHARED_LIB_NAME),
+    user_link_flags = selects.with_or(SHARED_LIB_LINKOPTS),
+    deps = [":objects"],
+)
+
+# Windows links against an import library rather than the DLL itself.
+filegroup(
+    name = "import_library",
+    srcs = [":shared"],
+    output_group = "interface_library",
+)
+
+cc_import(
+    name = "dynamic",
+    interface_library = select({
+        "@platforms//os:windows": ":import_library",
+        "//conditions:default": None,
+    }),
+    shared_library = ":shared",
+    deps = [":headers"],
+)
+
+alias(
+    name = "libffi",
+    actual = select({
+        ":static_linkage": ":objects",
+        "//conditions:default": ":dynamic",
+    }),
     visibility = ["//visibility:public"],
 )

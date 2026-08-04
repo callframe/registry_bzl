@@ -3,9 +3,9 @@
   "integrity": "sha256-730ZlPUzyec0PWwZ8xBk/I67y8qhRL44ErT0MFKgX0w=",
   "strip_prefix": "expat-2.8.2",
   "overlay": {
-    "BUILD.bazel": "sha256-SdBR5fb8mS+KBaClJYJrA1KWFLRnUnR2cadMSc1N8FI=",
+    "BUILD.bazel": "sha256-LylKqB95J/XgkQMwCczv2LtxrY+1ovtTHqoKCpk6KIU=",
     "MODULE.bazel": "sha256-8Xrjb0mYVT8mqXds6wdqiJoCEwsLC+TfPLri4Uxr2iU=",
-    "config.bzl": "sha256-L3C5pNkXanp75SHMGxiyb/HvtDI4/AGf++PdmB72rbU=",
-    "flags.bzl": "sha256-tX1kYuCmMIIYII2aoQ6XmC1cyQdsPM0gj9HcCiQty0s="
+    "config.bzl": "sha256-2T5ok6hL88fW+wXy1k3ooLk61d6b//NgfkhNuCk4emQ=",
+    "templates.bzl": "sha256-gzU09ZtT5ax+ERsvFOlYK4R6jW2apzj/TIcOfNPZr0o="
   }
 }

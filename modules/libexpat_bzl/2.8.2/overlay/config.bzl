@@ -2,7 +2,8 @@
 
 load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 load("@rules_cc//cc/common:cc_info.bzl", "CcInfo")
-load(":flags.bzl", "FlagInfo", "TemplateSubstitutionsInfo")
+load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
+load(":templates.bzl", "SubstitutionsInfo")
 
 _PACKAGE = "expat"
 _SOVERSION = "1"
@@ -53,7 +54,7 @@ def _cmake_macros(macros):
     return result
 
 def expat_base_substitutions(version):
-    release = _release(version)
+    version_release = _release(version)
     return _cmake_macros({
         "BYTEORDER": "1234",
         "HAVE_ARC4RANDOM": None,
@@ -76,9 +77,9 @@ def expat_base_substitutions(version):
         "HAVE_UNISTD_H": "1",
         "PACKAGE_BUGREPORT": _string("expat-bugs@libexpat.org"),
         "PACKAGE_NAME": _string(_PACKAGE),
-        "PACKAGE_STRING": _string("%s %s" % (_PACKAGE, release)),
+        "PACKAGE_STRING": _string("%s %s" % (_PACKAGE, version_release)),
         "PACKAGE_TARNAME": _string(_PACKAGE),
-        "PACKAGE_VERSION": _string(release),
+        "PACKAGE_VERSION": _string(version_release),
         "STDC_HEADERS": "1",
         "WORDS_BIGENDIAN": None,
         "XML_ATTR_INFO": None,
@@ -90,12 +91,11 @@ def expat_base_substitutions(version):
         "@BYTEORDER@": "1234",
         "@PACKAGE_BUGREPORT@": "expat-bugs@libexpat.org",
         "@PACKAGE_NAME@": _PACKAGE,
-        "@PACKAGE_STRING@": "%s %s" % (_PACKAGE, release),
+        "@PACKAGE_STRING@": "%s %s" % (_PACKAGE, version_release),
         "@PACKAGE_TARNAME@": _PACKAGE,
-        "@PACKAGE_VERSION@": release,
+        "@PACKAGE_VERSION@": version_release,
         "@XML_CONTEXT_BYTES@": "@EXPAT_CONTEXT_BYTES@",
         "@XML_GE@": "@EXPAT_XML_GE@",
-        "@off_t@": "off_t",
     }
 
 EXPAT_CONFIG_BY_WINDOWS = {
@@ -128,7 +128,7 @@ def _define_if(defines, condition, define):
         defines.append(define)
 
 def _flag(ctx, name):
-    return getattr(ctx.attr, "_" + name)[FlagInfo].value
+    return getattr(ctx.attr, "_" + name)[BuildSettingInfo].value
 
 def _config_impl(ctx):
     attr_info = _flag(ctx, "attr_info")
@@ -167,7 +167,7 @@ def _config_impl(ctx):
                 local_defines = depset(private_defines),
             ),
         ),
-        TemplateSubstitutionsInfo(substitutions = substitutions),
+        SubstitutionsInfo(substitutions = substitutions),
     ]
 
 expat_config = rule(

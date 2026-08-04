@@ -39,6 +39,10 @@ def _components(version):
 def _release(version):
     return "%d.%d.%d" % tuple(_components(version))
 
+def _packed(version):
+    major, minor, micro = _components(version)
+    return major * 10000 + minor * 100 + micro
+
 def _define(key, value):
     if value == None:
         return "/* #undef %s */" % key
@@ -55,11 +59,10 @@ def _macros(macros):
 # --- ffi.h -----------------------------------------------------------------
 
 def ffi_h(version):
-    major, minor, micro = _components(version)
     return {
         "@VERSION@": _release(version),
         "@FFI_VERSION_STRING@": _release(version),
-        "@FFI_VERSION_NUMBER@": str(major * 10000 + minor * 100 + micro),
+        "@FFI_VERSION_NUMBER@": str(_packed(version)),
     }
 
 FFI_H_BY_CPU = {

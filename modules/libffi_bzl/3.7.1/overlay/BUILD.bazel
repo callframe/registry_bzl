@@ -95,9 +95,9 @@ copy_file(
     name = "ffitarget_h",
     src = selects.with_or(
         {
-            ("@platforms//cpu:x86_64", "//platforms:x86_32"): "src/x86/ffitarget.h",
-            "@platforms//cpu:arm64": "src/aarch64/ffitarget.h",
-            "//platforms:arm": "src/arm/ffitarget.h",
+            ("@platforms_extended//cpu:x64", "//platforms:x86_32_not_macos"): "src/x86/ffitarget.h",
+            "@platforms_extended//cpu:arm64": "src/aarch64/ffitarget.h",
+            "//platforms:arm32_not_macos": "src/arm/ffitarget.h",
         },
         no_match_error = UNSUPPORTED,
     ),
@@ -183,7 +183,7 @@ COMMON_SOURCES = [
 cc_library(
     name = "objects",
     srcs = COMMON_SOURCES + select({
-        "//platforms:unix_x86_64": [
+        "@platforms_extended//platform:x64_unix": [
             "src/x86/asmnames.h",
             "src/x86/ffi64.c",
             "src/x86/ffiw64.c",
@@ -191,36 +191,36 @@ cc_library(
             "src/x86/unix64.S",
             "src/x86/win64.S",
         ],
-        "//platforms:unix_x86_32": [
+        "@platforms_extended//platform:x86_unix": [
             "src/x86/ffi.c",
             "src/x86/internal.h",
             "src/x86/sysv.S",
         ],
-        "//platforms:unix_arm64": [
+        "@platforms_extended//platform:arm64_unix": [
             "src/aarch64/ffi.c",
             "src/aarch64/internal.h",
             "src/aarch64/sysv.S",
         ],
-        "//platforms:unix_arm": [
+        "@platforms_extended//platform:arm32_unix": [
             "src/arm/ffi.c",
             "src/arm/internal.h",
             "src/arm/sysv.S",
         ],
-        "//platforms:windows_x86_64": [
+        "@platforms_extended//platform:x64_windows": [
             "src/x86/ffiw64.c",
             ":win64_intel",
         ],
-        "//platforms:windows_x86_32": [
+        "@platforms_extended//platform:x86_windows": [
             "src/x86/ffi.c",
             "src/x86/internal.h",
             ":sysv_intel",
         ],
-        "//platforms:windows_arm64": [
+        "@platforms_extended//platform:arm64_windows": [
             "src/aarch64/ffi.c",
             "src/aarch64/internal.h",
             ":win64_armasm",
         ],
-        "//platforms:windows_arm": [
+        "@platforms_extended//platform:arm32_windows": [
             "src/arm/ffi.c",
             "src/arm/internal.h",
             ":sysv_msvc_arm32",

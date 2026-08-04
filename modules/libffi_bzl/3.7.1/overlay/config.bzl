@@ -63,22 +63,22 @@ def ffi_h(version):
     }
 
 FFI_H_BY_CPU = {
-    "@platforms//cpu:x86_64": {
+    "@platforms_extended//cpu:x64": {
         "@TARGET@": "X86_64",
         "@HAVE_LONG_DOUBLE@": "1",
         "@FFI_EXEC_TRAMPOLINE_TABLE@": "0",
     },
-    "//platforms:x86_32": {
+    "//platforms:x86_32_not_macos": {
         "@TARGET@": "X86",
         "@HAVE_LONG_DOUBLE@": "1",
         "@FFI_EXEC_TRAMPOLINE_TABLE@": "0",
     },
-    "@platforms//cpu:arm64": {
+    "@platforms_extended//cpu:arm64": {
         "@TARGET@": "AARCH64",
         "@HAVE_LONG_DOUBLE@": "1",
         "@FFI_EXEC_TRAMPOLINE_TABLE@": "0",
     },
-    "//platforms:arm": {
+    "//platforms:arm32_not_macos": {
         "@TARGET@": "ARM",
         # AAPCS: long double == double.
         "@HAVE_LONG_DOUBLE@": "0",
@@ -93,19 +93,19 @@ FFI_H_X86_FREEBSD = {
 
 # The MS ABI has no extended precision type: long double == double.
 FFI_H_BY_WINDOWS_CPU = {
-    "//platforms:windows_x86_64": {
+    "@platforms_extended//platform:x64_windows": {
         "@TARGET@": "X86_WIN64",
         "@HAVE_LONG_DOUBLE@": "0",
     },
-    "//platforms:windows_x86_32": {
+    "@platforms_extended//platform:x86_windows": {
         "@TARGET@": "X86_WIN32",
         "@HAVE_LONG_DOUBLE@": "0",
     },
-    "//platforms:windows_arm64": {
+    "@platforms_extended//platform:arm64_windows": {
         "@TARGET@": "ARM_WIN64",
         "@HAVE_LONG_DOUBLE@": "0",
     },
-    "//platforms:windows_arm": {
+    "@platforms_extended//platform:arm32_windows": {
         "@TARGET@": "ARM_WIN32",
         "@HAVE_LONG_DOUBLE@": "0",
     },
@@ -114,7 +114,7 @@ FFI_H_BY_WINDOWS_CPU = {
 
 # Apple's arm64 ABI, unlike AAPCS64.
 FFI_H_MACOS_ARM64 = {
-    "//platforms:macos_arm64": {
+    "@platforms_extended//platform:arm64_macos": {
         "@HAVE_LONG_DOUBLE@": "0",
         "@FFI_EXEC_TRAMPOLINE_TABLE@": "1",
     },
@@ -173,7 +173,7 @@ def fficonfig(version):
     })
 
 FFICONFIG_BY_CPU = {
-    "@platforms//cpu:x86_64": _macros({
+    "@platforms_extended//cpu:x64": _macros({
         "HAVE_AS_X86_64_UNWIND_SECTION_TYPE": "1",
         "HAVE_AS_X86_PCREL": "1",
         "HAVE_INT128": "1",
@@ -181,7 +181,7 @@ FFICONFIG_BY_CPU = {
         "SIZEOF_LONG_DOUBLE": "16",
         "SIZEOF_SIZE_T": "8",
     }),
-    "//platforms:x86_32": _macros({
+    "//platforms:x86_32_not_macos": _macros({
         "HAVE_AS_X86_64_UNWIND_SECTION_TYPE": None,
         "HAVE_AS_X86_PCREL": "1",
         "HAVE_INT128": None,
@@ -190,7 +190,7 @@ FFICONFIG_BY_CPU = {
         "SIZEOF_LONG_DOUBLE": "12",
         "SIZEOF_SIZE_T": "4",
     }),
-    "@platforms//cpu:arm64": _macros({
+    "@platforms_extended//cpu:arm64": _macros({
         "HAVE_AS_X86_64_UNWIND_SECTION_TYPE": None,
         "HAVE_AS_X86_PCREL": None,
         "HAVE_INT128": "1",
@@ -198,7 +198,7 @@ FFICONFIG_BY_CPU = {
         "SIZEOF_LONG_DOUBLE": "16",
         "SIZEOF_SIZE_T": "8",
     }),
-    "//platforms:arm": _macros({
+    "//platforms:arm32_not_macos": _macros({
         "HAVE_AS_X86_64_UNWIND_SECTION_TYPE": None,
         "HAVE_AS_X86_PCREL": None,
         "HAVE_INT128": None,
@@ -249,14 +249,14 @@ FFICONFIG_BY_OS = {
 
 # 32-bit COFF decorates symbols with an underscore.
 FFICONFIG_WINDOWS_32BIT = {
-    ("//platforms:windows_x86_32", "//platforms:windows_arm"): _macros({
+    ("@platforms_extended//platform:x86_windows", "@platforms_extended//platform:arm32_windows"): _macros({
         "SYMBOL_UNDERSCORE": "1",
     }),
     "//conditions:default": {},
 }
 
 FFICONFIG_MACOS_ARM64 = {
-    "//platforms:macos_arm64": _macros({
+    "@platforms_extended//platform:arm64_macos": _macros({
         "FFI_EXEC_TRAMPOLINE_TABLE": "1",
         "FFI_MMAP_EXEC_WRIT": None,
         "HAVE_LONG_DOUBLE": None,

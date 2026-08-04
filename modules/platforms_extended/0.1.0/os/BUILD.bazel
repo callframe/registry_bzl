@@ -1,0 +1,24 @@
+"""Common OS selector groups."""
+
+load("@bazel_skylib//lib:selects.bzl", "selects")
+
+package(default_visibility = ["//visibility:public"])
+
+selects.config_setting_group(
+    name = "bsd",
+    match_any = [
+        "@platforms//os:freebsd",
+        "@platforms//os:openbsd",
+        "@platforms//os:netbsd",
+    ],
+)
+
+selects.config_setting_group(
+    name = "unix",
+    match_any = [
+        "@platforms//os:linux",
+        "@platforms//os:macos",
+        ":bsd",
+    ],
+)
+

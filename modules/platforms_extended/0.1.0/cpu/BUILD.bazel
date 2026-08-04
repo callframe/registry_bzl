@@ -1,0 +1,35 @@
+"""Common CPU selector groups."""
+
+load("@bazel_skylib//lib:selects.bzl", "selects")
+
+package(default_visibility = ["//visibility:public"])
+
+selects.config_setting_group(
+    name = "x86",
+    match_any = [
+        "@platforms//cpu:x86_32",
+        "@platforms//cpu:i386",
+    ],
+)
+
+selects.config_setting_group(
+    name = "x64",
+    match_any = [
+        "@platforms//cpu:x86_64",
+    ],
+)
+
+selects.config_setting_group(
+    name = "arm32",
+    match_any = [
+        "@platforms//cpu:arm",
+        "@platforms//cpu:armv7",
+    ],
+)
+
+selects.config_setting_group(
+    name = "arm64",
+    match_any = [
+        "@platforms//cpu:arm64",
+    ],
+)

@@ -69,6 +69,14 @@ selects.config_setting_group(
     ],
 )
 
+selects.config_setting_group(
+    name = "cl_compatible_compiler",
+    match_any = [
+        "@rules_cc//cc/compiler:clang-cl",
+        "@rules_cc//cc/compiler:msvc-cl",
+    ],
+)
+
 # --- generated files -------------------------------------------------------
 
 expat_config(name = "config")
@@ -98,7 +106,6 @@ PUBLIC_HEADERS = [
 ]
 
 INTERNAL_HEADERS = [
-    ":expat_config_h",
     "lib/ascii.h",
     "lib/asciitab.h",
     "lib/fallthrough.h",
@@ -146,22 +153,28 @@ cc_library(
         ":static_linkage": ["XML_STATIC"],
         "//conditions:default": [],
     }),
-    includes = ["lib"],
+    strip_include_prefix = "/lib",
     visibility = ["//visibility:public"],
     deps = [":config"],
 )
 
 cc_library(
+    name = "config_header",
+    hdrs = [":expat_config_h"],
+)
+
+cc_library(
     name = "internal_headers",
     hdrs = INTERNAL_HEADERS,
-    includes = ["lib"],
+    strip_include_prefix = "/lib",
+    deps = [":config_header"],
 )
 
 cc_library(
     name = "objects",
     srcs = COMMON_SOURCES + select(RANDOM_SOURCES_BY_OS),
     copts = select({
-        "@platforms//os:windows": [
+        ":cl_compatible_compiler": [
             "/wd4996",
         ],
         "//conditions:default": [],
@@ -178,6 +191,10 @@ cc_shared_library(
     name = "shared",
     shared_lib_name = select(SHARED_LIB_NAME),
     user_link_flags = selects.with_or(SHARED_LIB_LINKOPTS),
+    win_def_file = select({
+        "@platforms//os:windows": ":libexpat_def",
+        "//conditions:default": None,
+    }),
     deps = [":objects"],
 )
 

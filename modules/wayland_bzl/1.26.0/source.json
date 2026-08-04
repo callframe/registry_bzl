@@ -3,14 +3,15 @@
   "integrity": "sha256-VrOphcv+F6km47zwN+TTdPROqjPzpLNkVJ3d8NMkzrw=",
   "strip_prefix": "wayland-1.26.0",
   "patches": {
-    "config-include.patch": "sha256-1oWVv+umDELP3VSZ45pTEoZNk1p5bgMME2j5R3jjNBE="
+    "config-include.patch": "sha256-1oWVv+umDELP3VSZ45pTEoZNk1p5bgMME2j5R3jjNBE=",
+    "optional-memfd-declarations.patch": "sha256-BkPpzgBg0rqSrORwhuXMcgEMN4D75X7Nwx6v3yXTw2w="
   },
   "patch_strip": 1,
   "overlay": {
     "BUILD.bazel": "sha256-3MoIrkVM6gBt1Lfb9ZjCAzWSm73eJo1fuwto7o9FP1Y=",
     "MODULE.bazel": "sha256-wPZGiZHsYiBfCkhA2qmM0b3NohMqU5oRhh+NDMJ4JAI=",
-    "config.bzl": "sha256-2a7hpryTqOQxtk7ahOz6DFXgqkdq9jgxewMqOTW6XoU=",
-    "cursor/BUILD.bazel": "sha256-UTqKkOH9zgG1SQJHSk+oBy6oXQD/W/4jtrS0G7IpZv4=",
+    "config.bzl": "sha256-tWaui2eoGyUrPKO+6Gm4fOpncMoQoXUi02Tqen70UV8=",
+    "cursor/BUILD.bazel": "sha256-Eoxq1/B7mSon3sO6UDJ9yb+QW9OFiGsaRdQlrNcW01k=",
     "egl/BUILD.bazel": "sha256-6FTyk2qgXoM3wJhc0RDPxRyE0jFF2BNx3FwsBrxQGKw=",
     "protocol/BUILD.bazel": "sha256-8qNFz9/2XbKyHPg3ugfha1XnqoSQRLFHAmAnq4hkuBc=",
     "src/BUILD.bazel": "sha256-Bk6CrKSmjLffa+UHO8EytYjvY4E0qNPvpuRs7KTPLSY=",

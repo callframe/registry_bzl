@@ -33,7 +33,7 @@ cc_library(
     deps = [
         ":headers",
         "//:config",
-        "//src:client_headers",
+        "//src:client_objects",
     ],
     visibility = ["//visibility:public"],
 )

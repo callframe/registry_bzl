@@ -1,0 +1,15 @@
+diff --git a/src/wayland-shm.c b/src/wayland-shm.c
+index 3ac4add..8d27df5 100644
+--- a/src/wayland-shm.c
++++ b/src/wayland-shm.c
+@@ -357,8 +357,10 @@ shm_create_pool(struct wl_client *client, struct wl_resource *resource,
+ 		uint32_t id, int fd, int32_t size)
+ {
+ 	struct wl_shm_pool *pool;
++#ifdef HAVE_MEMFD_CREATE
+ 	struct stat statbuf;
+ 	int seals;
++#endif
+ 	int prot;
+ 	int flags;
+ 	uint32_t version;

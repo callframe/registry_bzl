@@ -75,7 +75,7 @@ def expat_bool_flag(name, default, visibility = ["//visibility:public"]):
 def expat_base_substitutions(version):
     version_release = _release(version)
     return _cmake_macros({
-        "BYTEORDER": "1234",
+        "BYTEORDER": "__BYTE_ORDER__",
         "HAVE_ARC4RANDOM": None,
         "HAVE_ARC4RANDOM_BUF": None,
         "HAVE_DLFCN_H": "1",
@@ -107,7 +107,7 @@ def expat_base_substitutions(version):
         "XML_NS": "1",
         "off_t": None,
     }) | {
-        "@BYTEORDER@": "1234",
+        "@BYTEORDER@": "__BYTE_ORDER__",
         "@PACKAGE_BUGREPORT@": "expat-bugs@libexpat.org",
         "@PACKAGE_NAME@": _PACKAGE,
         "@PACKAGE_STRING@": "%s %s" % (_PACKAGE, version_release),
@@ -119,6 +119,7 @@ def expat_base_substitutions(version):
 
 EXPAT_CONFIG_BY_WINDOWS = {
     "@platforms//os:windows": _cmake_macros({
+        "BYTEORDER": "1234",
         "HAVE_DLFCN_H": None,
         "HAVE_FCNTL_H": None,
         "HAVE_GETPAGESIZE": None,
@@ -128,7 +129,7 @@ EXPAT_CONFIG_BY_WINDOWS = {
         "HAVE_SYS_TYPES_H": None,
         "HAVE_UNISTD_H": None,
         "XML_DEV_URANDOM": None,
-    }),
+    }) | {"@BYTEORDER@": "1234"},
     "//conditions:default": {},
 }
 

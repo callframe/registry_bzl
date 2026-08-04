@@ -60,25 +60,25 @@ def _config_h(version):
 
 #pragma once
 
-#define HAVE_ACCEPT4
+#undef HAVE_ACCEPT4
 
 #define HAVE_BROKEN_MSG_CMSG_CLOEXEC 0
 
-#define HAVE_GETTID
+#undef HAVE_GETTID
 
-#define HAVE_MEMFD_CREATE
+#undef HAVE_MEMFD_CREATE
 
-#define HAVE_MKOSTEMP
+#undef HAVE_MKOSTEMP
 
-#define HAVE_MREMAP
+#undef HAVE_MREMAP
 
-#define HAVE_POSIX_FALLOCATE
+#undef HAVE_POSIX_FALLOCATE
 
-#define HAVE_PRCTL
+#undef HAVE_PRCTL
 
-#define HAVE_STRNDUP
+#undef HAVE_STRNDUP
 
-#define HAVE_SYS_PRCTL_H
+#undef HAVE_SYS_PRCTL_H
 
 #undef HAVE_SYS_PROCCTL_H
 

@@ -17,7 +17,10 @@ SHARED_LIB_NAME = {
 # Bazel names the file but records no SONAME of its own.
 SHARED_LIB_LINKOPTS = {
     ("@platforms//os:macos", "@platforms//os:windows"): [],
-    "//conditions:default": ["-Wl,-soname," + _SONAME],
+    "//conditions:default": [
+        "-Wl,-soname," + _SONAME,
+        "-Wl,--version-script,$(location :libffi_map)",
+    ],
 }
 
 def _string(value):
@@ -214,7 +217,6 @@ FFICONFIG_BY_CPU = {
 FFICONFIG_BY_OS = {
     "@platforms//os:linux": _macros({
         "FFI_EXEC_STATIC_TRAMP": "1",
-        "HAVE_MEMFD_CREATE": "1",
     }),
     "@platforms//os:macos": _macros({
         "FFI_MMAP_EXEC_WRIT": "1",

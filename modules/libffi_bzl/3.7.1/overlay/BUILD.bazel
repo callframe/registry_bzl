@@ -21,6 +21,7 @@ load(
     "fficonfig",
 )
 load(":msvc_asm.bzl", "msvc_asm")
+load(":version_script.bzl", "version_script")
 
 UNSUPPORTED = """%s supports x86_64, x86_32, arm64 and arm on linux, windows,
 freebsd, openbsd and netbsd, and x86_64 and arm64 on macos. Windows needs a
@@ -30,6 +31,13 @@ FFITARGET_H_BY_CPU = {
     ("@platforms_extended//cpu:x64", "//platforms:x86_32_not_macos"): "src/x86/ffitarget.h",
     "@platforms_extended//cpu:arm64": "src/aarch64/ffitarget.h",
     "//platforms:arm32_not_macos": "src/arm/ffitarget.h",
+}
+
+LIBFFI_MAP_TARGET_BY_CPU = {
+    "@platforms_extended//cpu:x64": "X86_64",
+    "//platforms:x86_32_not_macos": "X86",
+    "@platforms_extended//cpu:arm64": "AARCH64",
+    "//platforms:arm32_not_macos": "ARM",
 }
 
 PUBLIC_HEADERS = [
@@ -219,7 +227,7 @@ msvc_asm(
 cc_library(
     name = "headers",
     hdrs = PUBLIC_HEADERS,
-    includes = ["include"],
+    strip_include_prefix = "/include",
     visibility = ["//visibility:public"],
 )
 
@@ -227,6 +235,21 @@ cc_library(
 cc_library(
     name = "internal_headers",
     hdrs = INTERNAL_HEADERS,
+    strip_include_prefix = "/include",
+)
+
+version_script(
+    name = "libffi_map",
+    src = "libffi.map.in",
+    out = "libffi.map",
+    target = select(
+        LIBFFI_MAP_TARGET_BY_CPU,
+        no_match_error = UNSUPPORTED,
+    ),
+    deps = [
+        ":headers",
+        ":internal_headers",
+    ],
 )
 
 cc_library(
@@ -255,6 +278,10 @@ cc_library(
 
 cc_shared_library(
     name = "shared",
+    additional_linker_inputs = selects.with_or({
+        ("@platforms//os:macos", "@platforms//os:windows"): [],
+        "//conditions:default": [":libffi_map"],
+    }),
     shared_lib_name = select(SHARED_LIB_NAME),
     user_link_flags = selects.with_or(SHARED_LIB_LINKOPTS),
     deps = [":objects"],

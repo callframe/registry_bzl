@@ -3,7 +3,7 @@
   "integrity": "sha256-1emmY43b0lE921RRjrZ+S75vpwe8wBwQ9iEvCgiNgZ0=",
   "strip_prefix": "libffi-3.7.1",
   "overlay": {
-    "BUILD.bazel": "sha256-8Sb2gBmJyd8jeYgaCnPYoeFeGR2SLicFF5uArvXFOTk=",
+    "BUILD.bazel": "sha256-6PV6Hq4Yf2IBoISD+QwNgtJ06BRbc7IwGdoCnYDC2AU=",
     "MODULE.bazel": "sha256-uSCDUsi6Aq6D9heyz7vO+9tGkzqr+Fsp0dJJkQzm6cA=",
     "config.bzl": "sha256-ZKfo2dSzixDHQEgjGyKm099MJHFzAeXhygW4v8Kt2io=",
     "msvc_asm.bzl": "sha256-q4nqZ1GZZ8ZhKTIiL3zNyVAf8Ioch/5R9EvZa91QFPk=",

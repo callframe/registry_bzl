@@ -12,11 +12,12 @@ have two constraint values that mean one thing (`x86_32`/`i386`, `arm`/`armv7`),
 `@platforms//cpu:arm64` is an alias of `aarch64`. Nothing in that file is libffi-specific
 except which combinations it declares. Strongest candidate.
 
-**Autoheader substitution** — `config.bzl`'s `_define` + `_macros`. Every autotools project
-ships a `config.h.in` full of `#undef FOO` lines, and filling it in is the same three lines
-of Starlark plus an `expand_template`. Comes with a trap worth carrying over: the
-substitution key must include the trailing newline, or `#undef HAVE_LONG_DOUBLE` also
-matches the start of `#undef HAVE_LONG_DOUBLE_VARIANT`.
+**Autoheader/CMake config substitution** — `config.bzl`'s `_define` + `_macros`. Every
+autotools project ships a `config.h.in` full of `#undef FOO` lines, and CMake projects like
+expat ship the same shape as `#cmakedefine FOO`. Filling either in is the same few lines of
+Starlark plus an `expand_template`. Comes with a trap worth carrying over: the substitution
+key must include the trailing newline, or `#undef HAVE_LONG_DOUBLE` also matches the start
+of `#undef HAVE_LONG_DOUBLE_VARIANT`.
 
 **Version macros from the registry** — `config.bzl`'s `_components`/`_release`. Turning
 `module_version()` into `PACKAGE_VERSION`, `VERSION` and a packed integer, tolerating both a
@@ -30,6 +31,18 @@ arrive by flag. Every C library has the same pattern under a different macro nam
 `XML_STATIC` (expat), `LIBXML_STATIC` (libxml2), `MI_SHARED_LIB` (mimalloc),
 `FFI_STATIC_BUILD`/`FFI_BUILDING_DLL` here. A macro taking those two names as parameters
 would cover all of them.
+
+**Conditional public feature defines** — expat's feature flags show that some configured
+defines are not private implementation details. `XML_LARGE_SIZE`, `XML_ATTR_INFO`,
+`XML_DTD` and `XML_GE` change declarations or ABI visible through `expat.h`, so the overlay
+has to propagate them to consumers. This is worth treating as part of any future helper
+around generated config headers.
+
+**Feature flags as providers** — expat also needs configurable values that are not just
+select keys, for example `XML_CONTEXT_BYTES=<int>`. A V8-style tiny build-setting provider
+plus a config target that emits `CcInfo` defines and template substitutions is a better
+shape than enumerating every value through `config_setting`. This is a strong shared-module
+candidate once another C overlay needs user-facing feature flags.
 
 **Not shared**: `msvc_asm.bzl`. Only projects shipping MSVC assembly need `cl /EP` before
 `ml64`, which is unusual — libffi has it, the others above do not.

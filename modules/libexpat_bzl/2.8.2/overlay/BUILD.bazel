@@ -1,0 +1,202 @@
+load("@bazel_skylib//lib:selects.bzl", "selects")
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
+load("@rules_cc//cc:cc_import.bzl", "cc_import")
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+load("@rules_cc//cc:cc_shared_library.bzl", "cc_shared_library")
+load(
+    ":config.bzl",
+    "EXPAT_CONFIG_BY_WINDOWS",
+    "EXPAT_DEF_BY_ATTR_INFO",
+    "EXPAT_DEF_BY_DTD_OR_GE",
+    "SHARED_LIB_LINKOPTS",
+    "SHARED_LIB_NAME",
+    "expat_config",
+    "expat_base_substitutions",
+)
+load(":flags.bzl", "bool_flag", "expand_config_template", "int_flag")
+
+UNSUPPORTED = """%s supports x86, x64, arm32 and arm64 on linux, windows,
+freebsd, openbsd and netbsd, and x64 and arm64 on macos.""" % module_name()
+
+# --- build settings --------------------------------------------------------
+
+bool_flag(name = "attr_info", default = False)
+bool_flag(name = "large_size", default = False)
+bool_flag(name = "min_size", default = False)
+bool_flag(name = "dtd", default = True)
+bool_flag(name = "ge", default = True)
+bool_flag(name = "ns", default = True)
+int_flag(name = "context_bytes", default = 1024)
+
+string_flag(
+    name = "linkage",
+    build_setting_default = "dynamic",
+    values = [
+        "dynamic",
+        "static",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+config_setting(
+    name = "static_linkage",
+    flag_values = {":linkage": "static"},
+)
+
+config_setting(
+    name = "dynamic_linkage",
+    flag_values = {":linkage": "dynamic"},
+)
+
+selects.config_setting_group(
+    name = "windows_static",
+    match_all = [
+        "@platforms//os:windows",
+        ":static_linkage",
+    ],
+)
+
+selects.config_setting_group(
+    name = "windows_dynamic",
+    match_all = [
+        "@platforms//os:windows",
+        ":dynamic_linkage",
+    ],
+)
+
+# --- generated files -------------------------------------------------------
+
+expat_config(name = "config")
+
+expand_config_template(
+    name = "expat_config_h",
+    out = "expat_config.h",
+    base_substitutions = expat_base_substitutions(module_version()) |
+                         select(EXPAT_CONFIG_BY_WINDOWS, no_match_error = UNSUPPORTED),
+    config = ":config",
+    template = "expat_config.h.cmake",
+)
+
+expand_config_template(
+    name = "libexpat_def",
+    out = "lib/libexpat.def",
+    base_substitutions = select(EXPAT_DEF_BY_ATTR_INFO) |
+                         selects.with_or(EXPAT_DEF_BY_DTD_OR_GE),
+    template = "lib/libexpat.def.cmake",
+)
+
+# --- library ---------------------------------------------------------------
+
+PUBLIC_HEADERS = [
+    "lib/expat.h",
+    "lib/expat_external.h",
+]
+
+INTERNAL_HEADERS = [
+    ":expat_config_h",
+    "lib/ascii.h",
+    "lib/asciitab.h",
+    "lib/fallthrough.h",
+    "lib/iasciitab.h",
+    "lib/internal.h",
+    "lib/latin1tab.h",
+    "lib/memory_sanitizer.h",
+    "lib/nametab.h",
+    "lib/random_dev_urandom.h",
+    "lib/random_rand_s.h",
+    "lib/siphash.h",
+    "lib/utf8tab.h",
+    "lib/winconfig.h",
+    "lib/xmlrole.h",
+    "lib/xmltok.h",
+    "lib/xmltok_impl.h",
+]
+
+COMMON_SOURCES = [
+    "lib/xmlparse.c",
+    "lib/xmlrole.c",
+    "lib/xmltok.c",
+]
+
+RANDOM_SOURCES_BY_OS = {
+    "@platforms_extended//os:unix": [
+        "lib/random_dev_urandom.c",
+    ],
+    "@platforms//os:windows": [
+        "lib/random_rand_s.c",
+    ],
+    "//conditions:default": ["@platforms//:incompatible"],
+}
+
+TEXTUAL_HEADERS = [
+    "lib/xcsinc.c",
+    "lib/xmltok_impl.c",
+    "lib/xmltok_ns.c",
+]
+
+cc_library(
+    name = "headers",
+    hdrs = PUBLIC_HEADERS,
+    defines = select({
+        ":static_linkage": ["XML_STATIC"],
+        "//conditions:default": [],
+    }),
+    includes = ["lib"],
+    visibility = ["//visibility:public"],
+    deps = [":config"],
+)
+
+cc_library(
+    name = "internal_headers",
+    hdrs = INTERNAL_HEADERS,
+    includes = ["lib"],
+)
+
+cc_library(
+    name = "objects",
+    srcs = COMMON_SOURCES + select(RANDOM_SOURCES_BY_OS),
+    copts = select({
+        "@platforms//os:windows": [
+            "/wd4996",
+        ],
+        "//conditions:default": [],
+    }),
+    textual_hdrs = TEXTUAL_HEADERS,
+    deps = [
+        ":config",
+        ":headers",
+    ],
+    implementation_deps = [":internal_headers"],
+)
+
+cc_shared_library(
+    name = "shared",
+    shared_lib_name = select(SHARED_LIB_NAME),
+    user_link_flags = selects.with_or(SHARED_LIB_LINKOPTS),
+    deps = [":objects"],
+)
+
+filegroup(
+    name = "import_library",
+    srcs = [":shared"],
+    output_group = "interface_library",
+)
+
+cc_import(
+    name = "dynamic",
+    interface_library = select({
+        "@platforms//os:windows": ":import_library",
+        "//conditions:default": None,
+    }),
+    shared_library = ":shared",
+    deps = [":headers"],
+)
+
+alias(
+    name = "libexpat",
+    actual = select({
+        ":static_linkage": ":objects",
+        "//conditions:default": ":dynamic",
+    }),
+    visibility = ["//visibility:public"],
+)

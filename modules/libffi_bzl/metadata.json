@@ -1,7 +1,7 @@
 {
-  "homepage": "https://github.com/bazel-libs/libffi_bzl",
+  "homepage": "https://github.com/libffi/libffi",
   "maintainers": [],
-  "repository": ["github:bazel-libs/libffi_bzl"],
-  "versions": ["0.1.0"],
+  "repository": ["github:libffi/libffi"],
+  "versions": ["3.7.1"],
   "yanked_versions": {}
 }

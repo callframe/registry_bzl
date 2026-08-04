@@ -1,0 +1,38 @@
+load("@bazel_skylib//lib:selects.bzl", "selects")
+load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
+load("@rules_cc//cc:defs.bzl", "cc_library")
+load("libffi.bzl", "substitutions")
+
+# WIP: not finished yet
+
+FFI_H_MACOS = {
+    "@VERSION@": module_version(),
+    "@TARGET@": "AARCH64",
+    "@HAVE_LONG_DOUBLE@": "0",
+} # jump tables?
+
+expand_template(
+    name = "libffi_h",
+    out = "include/ffi.h",
+    substitutions = selects.with_or(
+        {
+            ("@platforms//cpu:x86_64", "@platforms//os:macos"): substitutions({
+                    
+            }),
+        },
+        no_match_error = "Target platform is not supported by libffi_bzl/libffi",
+    ),
+    template = "include/ffi.h.in",
+)
+
+cc_library(
+    name = "libffi",
+    hdrs = [
+        "include/ffi_cfi.h",
+        "include/tramp.h",
+        "include/ffi_common.h",
+        ":libffi_h",
+    ],
+    includes = ["include"],
+    visibility = ["//visibility:public"],
+)

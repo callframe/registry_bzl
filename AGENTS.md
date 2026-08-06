@@ -9,6 +9,7 @@ Each module has a `metadata.json` listing homepage, repository, versions, and ya
 ## Build, Test, and Development Commands
 
 - `./overlay_integrity.py <module>/<version>`: recalculates `source.json` overlay hashes after editing files under `overlay/`. Example: `./overlay_integrity.py libffi_bzl/3.7.1`.
+- `./overlay_mirror.py [<module>/<version>]`: replaces symlinked registry files with concrete copies and rewrites any mirrored file that drifted from its `overlay/` reference. Run it after editing `overlay/MODULE.bazel`; with no arguments it covers every module version.
 - `python3 -m json.tool modules/<module>/metadata.json >/dev/null`: validates JSON syntax for edited metadata files.
 - `git status --short`: checks changed registry files before committing.
 - `bazel build` / `bazel test`: run these only with user-approved escalated permissions when they need network access. OpenAI Codex's sandbox blocks Bazel network requests; do not try to work around that by adding unrelated flags such as `--batch` or experimental options.
@@ -23,9 +24,13 @@ Avoid `.` and `..` in Bazel C/C++ include paths. In particular, do not use `incl
 
 Module names should match their registry identity, for example `libexpat_bzl` or `platforms_extended`. Version directories must match the version strings listed in `metadata.json`.
 
+Never commit a symlink under `modules/`. Bazel fetches registry files over plain HTTP, and raw.githubusercontent.com serves a symlink's target path as the file body instead of following it, so consumers download a `MODULE.bazel` whose entire content is a path and the build fails. When a file exists both in `overlay/` and next to it, the `overlay/` copy is the reference and the mirrored copy is a duplicate of it — edit the overlay, then run `./overlay_mirror.py`.
+
 ## Testing Guidelines
 
 For JSON-only changes, validate syntax and schema fields. For overlay changes, run `./overlay_integrity.py` for each affected version, then test from a Bazel consumer using the relevant platform or toolchain. Keep generated hash updates with the overlay edit.
+
+Before committing, run `./overlay_mirror.py` and confirm `find modules -type l` prints nothing.
 
 ## Agent-Specific Instructions
 

@@ -1,37 +1,66 @@
 load("@bazel_skylib//lib:selects.bzl", "selects")
 load(
     "@bazel_skylib//rules:common_settings.bzl",
+    "bool_flag",
     "int_flag",
     "string_flag",
 )
+load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
 load("@rules_cc//cc:cc_import.bzl", "cc_import")
 load("@rules_cc//cc:cc_library.bzl", "cc_library")
 load("@rules_cc//cc:cc_shared_library.bzl", "cc_shared_library")
 load(
     ":config.bzl",
-    "EXPAT_CONFIG_BY_WINDOWS",
     "EXPAT_DEF_BY_ATTR_INFO",
     "EXPAT_DEF_BY_DTD_OR_GE",
     "SHARED_LIB_LINKOPTS",
     "SHARED_LIB_NAME",
     "expat_config",
-    "expat_bool_flag",
-    "expat_base_substitutions",
 )
-load(":templates.bzl", "expand_config_template")
-
-UNSUPPORTED = """%s supports x86, x64, arm32 and arm64 on linux, windows,
-freebsd, openbsd and netbsd, and x64 and arm64 on macos.""" % module_name()
 
 # --- build settings --------------------------------------------------------
 
-expat_bool_flag(name = "attr_info", default = False)
-expat_bool_flag(name = "large_size", default = False)
-expat_bool_flag(name = "min_size", default = False)
-expat_bool_flag(name = "dtd", default = True)
-expat_bool_flag(name = "ge", default = True)
-expat_bool_flag(name = "ns", default = True)
-int_flag(name = "context_bytes", build_setting_default = 1024)
+bool_flag(
+    name = "attr_info",
+    build_setting_default = False,
+    visibility = ["//visibility:public"],
+)
+
+bool_flag(
+    name = "large_size",
+    build_setting_default = False,
+    visibility = ["//visibility:public"],
+)
+
+bool_flag(
+    name = "min_size",
+    build_setting_default = False,
+    visibility = ["//visibility:public"],
+)
+
+bool_flag(
+    name = "dtd",
+    build_setting_default = True,
+    visibility = ["//visibility:public"],
+)
+
+bool_flag(
+    name = "ge",
+    build_setting_default = True,
+    visibility = ["//visibility:public"],
+)
+
+bool_flag(
+    name = "ns",
+    build_setting_default = True,
+    visibility = ["//visibility:public"],
+)
+
+int_flag(
+    name = "context_bytes",
+    build_setting_default = 1024,
+    visibility = ["//visibility:public"],
+)
 
 string_flag(
     name = "linkage",
@@ -49,24 +78,28 @@ config_setting(
 )
 
 config_setting(
-    name = "dynamic_linkage",
-    flag_values = {":linkage": "dynamic"},
+    name = "attr_info_enabled",
+    flag_values = {":attr_info": "True"},
 )
 
-selects.config_setting_group(
-    name = "windows_static",
-    match_all = [
-        "@platforms//os:windows",
-        ":static_linkage",
-    ],
+config_setting(
+    name = "dtd_enabled",
+    flag_values = {":dtd": "True"},
 )
 
-selects.config_setting_group(
-    name = "windows_dynamic",
-    match_all = [
-        "@platforms//os:windows",
-        ":dynamic_linkage",
-    ],
+config_setting(
+    name = "ge_enabled",
+    flag_values = {":ge": "True"},
+)
+
+config_setting(
+    name = "min_size_enabled",
+    flag_values = {":min_size": "True"},
+)
+
+config_setting(
+    name = "ns_enabled",
+    flag_values = {":ns": "True"},
 )
 
 selects.config_setting_group(
@@ -81,20 +114,11 @@ selects.config_setting_group(
 
 expat_config(name = "config")
 
-expand_config_template(
-    name = "expat_config_h",
-    out = "expat_config.h",
-    base_substitutions = expat_base_substitutions(module_version()) |
-                         select(EXPAT_CONFIG_BY_WINDOWS, no_match_error = UNSUPPORTED),
-    config = ":config",
-    template = "expat_config.h.cmake",
-)
-
-expand_config_template(
+expand_template(
     name = "libexpat_def",
     out = "lib/libexpat.def",
-    base_substitutions = select(EXPAT_DEF_BY_ATTR_INFO) |
-                         selects.with_or(EXPAT_DEF_BY_DTD_OR_GE),
+    substitutions = select(EXPAT_DEF_BY_ATTR_INFO) |
+                    selects.with_or(EXPAT_DEF_BY_DTD_OR_GE),
     template = "lib/libexpat.def.cmake",
 )
 
@@ -160,7 +184,7 @@ cc_library(
 
 cc_library(
     name = "config_header",
-    hdrs = [":expat_config_h"],
+    hdrs = ["expat_config.h"],
 )
 
 cc_library(
@@ -177,6 +201,13 @@ cc_library(
         ":cl_compatible_compiler": [
             "/wd4996",
         ],
+        "//conditions:default": [],
+    }),
+    local_defines = select({
+        ":min_size_enabled": ["XML_MIN_SIZE"],
+        "//conditions:default": [],
+    }) + select({
+        ":ns_enabled": ["XML_NS"],
         "//conditions:default": [],
     }),
     textual_hdrs = TEXTUAL_HEADERS,

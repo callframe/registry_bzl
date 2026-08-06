@@ -1,1 +1,10 @@
-overlay/MODULE.bazel
+module(
+    name = "libffi_bzl",
+    version = "3.7.1",    
+    bazel_compatibility = [">=7.2.1"],
+)
+
+bazel_dep(name = "rules_cc", version = "0.2.22")
+bazel_dep(name = "platforms", version = "1.1.0")
+bazel_dep(name = "platforms_extended", version = "0.1.0")
+bazel_dep(name = "bazel_skylib", version = "1.9.2")

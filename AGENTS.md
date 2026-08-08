@@ -22,7 +22,7 @@ Use two-space indentation in JSON. In Bazel overlays, prefer lowercase target na
 
 Avoid `.` and `..` in Bazel C/C++ include paths. In particular, do not use `includes = ["."]`: `includes` propagates the package directory as a system include path to reverse dependencies and should only be a compatibility escape hatch for legacy or third-party layouts. Prefer normal workspace- or package-relative includes with headers declared in `hdrs`. When adapting an upstream public header layout, use an exact `strip_include_prefix` and, when needed, `include_prefix`. Use `local_includes = ["."]` only when the search path genuinely must apply to the current target and cannot be represented with declared headers.
 
-Module names should match their registry identity, for example `libexpat_bzl` or `platforms_extended`. Version directories must match the version strings listed in `metadata.json`.
+Module names should match their registry identity, for example `libexpat_bzl` or `wayland_bzl`. Version directories must match the version strings listed in `metadata.json`.
 
 Never commit a symlink under `modules/`. Bazel fetches registry files over plain HTTP, and raw.githubusercontent.com serves a symlink's target path as the file body instead of following it, so consumers download a `MODULE.bazel` whose entire content is a path and the build fails. When a file exists both in `overlay/` and next to it, the `overlay/` copy is the reference and the mirrored copy is a duplicate of it — edit the overlay, then run `./overlay_mirror.py`.
 

@@ -1,0 +1,17 @@
+"""Expat-specific platform selector groups."""
+
+load("@bazel_skylib//lib:selects.bzl", "selects")
+
+OS_GROUPS = {
+    "bsd": [
+        "@platforms//os:freebsd",
+        "@platforms//os:openbsd",
+        "@platforms//os:netbsd",
+    ],
+}
+
+[selects.config_setting_group(
+    name = name,
+    match_any = labels,
+    visibility = ["//:__pkg__"],
+) for name, labels in OS_GROUPS.items()]

@@ -155,7 +155,7 @@ COMMON_SOURCES = [
 ]
 
 RANDOM_SOURCES_BY_OS = {
-    "@platforms_extended//os:unix": [
+    ("@platforms//os:linux", "@platforms//os:macos", "//platforms:bsd"): [
         "lib/random_dev_urandom.c",
     ],
     "@platforms//os:windows": [

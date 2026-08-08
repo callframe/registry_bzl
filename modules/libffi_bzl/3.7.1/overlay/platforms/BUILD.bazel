@@ -2,24 +2,73 @@
 
 load("@bazel_skylib//lib:selects.bzl", "selects")
 
-package(default_visibility = ["//:__pkg__"])
+CPU_GROUPS = {
+    "x86": [
+        "@platforms//cpu:x86_32",
+        "@platforms//cpu:i386",
+    ],
+    "x64": ["@platforms//cpu:x86_64"],
+    "arm32": [
+        "@platforms//cpu:arm",
+        "@platforms//cpu:armv7",
+    ],
+    "arm64": ["@platforms//cpu:arm64"],
+}
+
+OS_GROUPS = {
+    "bsd": [
+        "@platforms//os:freebsd",
+        "@platforms//os:openbsd",
+        "@platforms//os:netbsd",
+    ],
+}
+
+OS_LABELS = {
+    "bsd": ":bsd",
+    "linux": "@platforms//os:linux",
+    "macos": "@platforms//os:macos",
+    "windows": "@platforms//os:windows",
+}
+
+[selects.config_setting_group(
+    name = name,
+    match_any = labels,
+    visibility = ["//:__pkg__"],
+) for name, labels in CPU_GROUPS.items()]
+
+[selects.config_setting_group(
+    name = name,
+    match_any = labels,
+    visibility = ["//:__pkg__"],
+) for name, labels in OS_GROUPS.items()]
+
+[selects.config_setting_group(
+    name = "%s_%s" % (cpu, os),
+    match_all = [
+        ":" + cpu,
+        OS_LABELS[os],
+    ],
+    visibility = ["//:__pkg__"],
+) for cpu in CPU_GROUPS.keys() for os in OS_LABELS.keys()]
 
 selects.config_setting_group(
     name = "x86_32_not_macos",
     match_any = [
-        "@platforms_extended//platform:x86_linux",
-        "@platforms_extended//platform:x86_windows",
-        "@platforms_extended//platform:x86_bsd",
+        ":x86_linux",
+        ":x86_windows",
+        ":x86_bsd",
     ],
+    visibility = ["//:__pkg__"],
 )
 
 selects.config_setting_group(
     name = "arm32_not_macos",
     match_any = [
-        "@platforms_extended//platform:arm32_linux",
-        "@platforms_extended//platform:arm32_windows",
-        "@platforms_extended//platform:arm32_bsd",
+        ":arm32_linux",
+        ":arm32_windows",
+        ":arm32_bsd",
     ],
+    visibility = ["//:__pkg__"],
 )
 
 # i?86 freebsd and openbsd get their own target; netbsd is not special-cased
@@ -30,6 +79,7 @@ selects.config_setting_group(
         ":x86_32_not_macos",
         ":freebsd_or_openbsd",
     ],
+    visibility = ["//:__pkg__"],
 )
 
 selects.config_setting_group(
@@ -38,6 +88,7 @@ selects.config_setting_group(
         "@platforms//os:freebsd",
         "@platforms//os:openbsd",
     ],
+    visibility = ["//:__pkg__"],
 )
 
 selects.config_setting_group(
@@ -46,4 +97,5 @@ selects.config_setting_group(
         "@rules_cc//cc/compiler:gcc",
         "@rules_cc//cc/compiler:clang",
     ],
+    visibility = ["//:__pkg__"],
 )

@@ -3,11 +3,11 @@
   "integrity": "sha256-1emmY43b0lE921RRjrZ+S75vpwe8wBwQ9iEvCgiNgZ0=",
   "strip_prefix": "libffi-3.7.1",
   "overlay": {
-    "BUILD.bazel": "sha256-YKNyZyiRZiKjqsKse/wkNAaPwAmwEOF1Bs5vz/T3J2c=",
-    "MODULE.bazel": "sha256-uSCDUsi6Aq6D9heyz7vO+9tGkzqr+Fsp0dJJkQzm6cA=",
-    "config.bzl": "sha256-HfW1l8Dusjo1MnN7l0cmlukEwDzKMwqsevT0p1ZJ75k=",
+    "BUILD.bazel": "sha256-tzlIvCtmWHM584csv2NxaXbIPwsnds5grEWtY4ApkEI=",
+    "MODULE.bazel": "sha256-MXoOMF3W7OkbU7JxIOj0XnzJAbi122OzMn2zdFmwcL0=",
+    "config.bzl": "sha256-B5k5sqOkmVYX7bb0hXq2fBBosQlmszPBpm5hKumkJPk=",
     "msvc_asm.bzl": "sha256-q4nqZ1GZZ8ZhKTIiL3zNyVAf8Ioch/5R9EvZa91QFPk=",
-    "platforms/BUILD.bazel": "sha256-KjsHw/lrP3CaZ8ozet+EN8Kb2nFOhWjG7CZM43ZUOTQ=",
+    "platforms/BUILD.bazel": "sha256-2B+KjY7pffWZ3cGrI/gKsSJD0y0i7/TMAx4JaJ1z67g=",
     "version_script.bzl": "sha256-XklioJKSiF1+BcNwMs0PmBOqj/e0egTPT6ZHS7s8ArI="
   }
 }

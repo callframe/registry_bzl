@@ -28,15 +28,15 @@ freebsd, openbsd and netbsd, and x86_64 and arm64 on macos. Windows needs a
 cl-compatible compiler whose assembler speaks MASM.""" % module_name()
 
 FFITARGET_H_BY_CPU = {
-    ("@platforms_extended//cpu:x64", "//platforms:x86_32_not_macos"): "src/x86/ffitarget.h",
-    "@platforms_extended//cpu:arm64": "src/aarch64/ffitarget.h",
+    ("//platforms:x64", "//platforms:x86_32_not_macos"): "src/x86/ffitarget.h",
+    "//platforms:arm64": "src/aarch64/ffitarget.h",
     "//platforms:arm32_not_macos": "src/arm/ffitarget.h",
 }
 
 LIBFFI_MAP_TARGET_BY_CPU = {
-    "@platforms_extended//cpu:x64": "X86_64",
+    "//platforms:x64": "X86_64",
     "//platforms:x86_32_not_macos": "X86",
-    "@platforms_extended//cpu:arm64": "AARCH64",
+    "//platforms:arm64": "AARCH64",
     "//platforms:arm32_not_macos": "ARM",
 }
 
@@ -62,7 +62,7 @@ COMMON_SOURCES = [
 ]
 
 SOURCES_BY_PLATFORM = {
-    "@platforms_extended//platform:x64_unix": [
+    ("//platforms:x64_linux", "//platforms:x64_macos", "//platforms:x64_bsd"): [
         "src/x86/asmnames.h",
         "src/x86/ffi64.c",
         "src/x86/ffiw64.c",
@@ -70,36 +70,36 @@ SOURCES_BY_PLATFORM = {
         "src/x86/unix64.S",
         "src/x86/win64.S",
     ],
-    "@platforms_extended//platform:x86_unix": [
+    ("//platforms:x86_linux", "//platforms:x86_bsd"): [
         "src/x86/ffi.c",
         "src/x86/internal.h",
         "src/x86/sysv.S",
     ],
-    "@platforms_extended//platform:arm64_unix": [
+    ("//platforms:arm64_linux", "//platforms:arm64_macos", "//platforms:arm64_bsd"): [
         "src/aarch64/ffi.c",
         "src/aarch64/internal.h",
         "src/aarch64/sysv.S",
     ],
-    "@platforms_extended//platform:arm32_unix": [
+    ("//platforms:arm32_linux", "//platforms:arm32_bsd"): [
         "src/arm/ffi.c",
         "src/arm/internal.h",
         "src/arm/sysv.S",
     ],
-    "@platforms_extended//platform:x64_windows": [
+    "//platforms:x64_windows": [
         "src/x86/ffiw64.c",
         ":win64_intel",
     ],
-    "@platforms_extended//platform:x86_windows": [
+    "//platforms:x86_windows": [
         "src/x86/ffi.c",
         "src/x86/internal.h",
         ":sysv_intel",
     ],
-    "@platforms_extended//platform:arm64_windows": [
+    "//platforms:arm64_windows": [
         "src/aarch64/ffi.c",
         "src/aarch64/internal.h",
         ":win64_armasm",
     ],
-    "@platforms_extended//platform:arm32_windows": [
+    "//platforms:arm32_windows": [
         "src/arm/ffi.c",
         "src/arm/internal.h",
         ":sysv_msvc_arm32",

@@ -19,6 +19,7 @@ SHARED_LIB_LINKOPTS = {
 
 COMMON_COPTS = [
     "-std=c99",
+    "-fexceptions",
     "-D_POSIX_C_SOURCE=200809L",
     "-Wno-unused-parameter",
     "-Wstrict-prototypes",

@@ -15,3 +15,12 @@ OS_GROUPS = {
     match_any = labels,
     visibility = ["//:__pkg__"],
 ) for name, labels in OS_GROUPS.items()]
+
+selects.config_setting_group(
+    name = "gnu_compiler",
+    match_any = [
+        "@rules_cc//cc/compiler:gcc",
+        "@rules_cc//cc/compiler:clang",
+    ],
+    visibility = ["//:__pkg__"],
+)

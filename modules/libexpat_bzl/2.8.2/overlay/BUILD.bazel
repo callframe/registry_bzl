@@ -201,6 +201,10 @@ cc_library(
         ":cl_compatible_compiler": [
             "/wd4996",
         ],
+        "//platforms:gnu_compiler": [
+            "-std=c99",
+            "-fexceptions",
+        ],
         "//conditions:default": [],
     }),
     local_defines = select({

@@ -10,7 +10,7 @@
   "overlay": {
     "BUILD.bazel": "sha256-3MoIrkVM6gBt1Lfb9ZjCAzWSm73eJo1fuwto7o9FP1Y=",
     "MODULE.bazel": "sha256-wPZGiZHsYiBfCkhA2qmM0b3NohMqU5oRhh+NDMJ4JAI=",
-    "config.bzl": "sha256-tWaui2eoGyUrPKO+6Gm4fOpncMoQoXUi02Tqen70UV8=",
+    "config.bzl": "sha256-N/bUGpidKRwi/FkFaug0ddIkpSOjHeSQ8ENcZZr3JCA=",
     "cursor/BUILD.bazel": "sha256-Eoxq1/B7mSon3sO6UDJ9yb+QW9OFiGsaRdQlrNcW01k=",
     "egl/BUILD.bazel": "sha256-6FTyk2qgXoM3wJhc0RDPxRyE0jFF2BNx3FwsBrxQGKw=",
     "protocol/BUILD.bazel": "sha256-8qNFz9/2XbKyHPg3ugfha1XnqoSQRLFHAmAnq4hkuBc=",

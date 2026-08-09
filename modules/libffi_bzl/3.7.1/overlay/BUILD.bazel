@@ -258,7 +258,10 @@ cc_library(
     # Unwinding passes through closure callbacks, so this C code needs
     # unwind tables.
     copts = select({
-        "//platforms:gnu_compiler": ["-fexceptions"],
+        "//platforms:gnu_compiler": [
+            "-fexceptions",
+            "-std=c99",
+        ],
         "//conditions:default": [],
     }),
     # ffi.h picks its __declspec from these, so consumers must see what we

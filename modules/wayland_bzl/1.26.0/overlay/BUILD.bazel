@@ -78,19 +78,31 @@ cc_shared_library(
 cc_import(
     name = "client_dynamic",
     shared_library = ":client_shared",
-    deps = ["//src:client_headers"],
+    deps = [
+        "//src:client_headers",
+        # TODO(rules_cc#695): Remove once cc_import propagates shared_library runfiles.
+        "@libffi_bzl//:libffi",
+    ],
 )
 
 cc_import(
     name = "server_dynamic",
     shared_library = ":server_shared",
-    deps = ["//src:server_headers"],
+    deps = [
+        "//src:server_headers",
+        # TODO(rules_cc#695): Remove once cc_import propagates shared_library runfiles.
+        "@libffi_bzl//:libffi",
+    ],
 )
 
 cc_import(
     name = "cursor_dynamic",
     shared_library = ":cursor_shared",
-    deps = ["//cursor:headers"],
+    deps = [
+        # TODO(rules_cc#695): Remove once cc_import propagates shared_library runfiles.
+        ":client_dynamic",
+        "//cursor:headers",
+    ],
 )
 
 cc_import(

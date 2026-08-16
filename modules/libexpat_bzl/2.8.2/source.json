@@ -3,7 +3,7 @@
   "integrity": "sha256-730ZlPUzyec0PWwZ8xBk/I67y8qhRL44ErT0MFKgX0w=",
   "strip_prefix": "expat-2.8.2",
   "overlay": {
-    "BUILD.bazel": "sha256-3rGVJcPQBU3O0/BAegZoxAl+3zYzXDHuL+4NJlaustc=",
+    "BUILD.bazel": "sha256-FQeMX3aqzvV+xaZRnXUKKQQgpwj60HpuuM67TbtpsVQ=",
     "MODULE.bazel": "sha256-1Et51ZdLP5YnoRITgusAMGKwi/ZEr7iehArL6XZ92PY=",
     "config.bzl": "sha256-Yh+wgghJYSWngHiu9JyiPyCjyUZ6QD4rnFUbwsgmxfo=",
     "expat_config.h": "sha256-9kdBvP4PaUIe/LF7cdfkVpQn++ZafvyOX+B5XPXqCMI=",

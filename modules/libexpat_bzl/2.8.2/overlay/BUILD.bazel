@@ -196,7 +196,7 @@ cc_library(
 
 cc_library(
     name = "objects",
-    srcs = COMMON_SOURCES + select(RANDOM_SOURCES_BY_OS),
+    srcs = COMMON_SOURCES + selects.with_or(RANDOM_SOURCES_BY_OS),
     copts = select({
         ":cl_compatible_compiler": [
             "/wd4996",

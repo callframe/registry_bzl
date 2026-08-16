@@ -254,7 +254,7 @@ version_script(
 
 cc_library(
     name = "objects",
-    srcs = COMMON_SOURCES + select(SOURCES_BY_PLATFORM),
+    srcs = COMMON_SOURCES + selects.with_or(SOURCES_BY_PLATFORM),
     # Unwinding passes through closure callbacks, so this C code needs
     # unwind tables.
     copts = select({

@@ -5,6 +5,7 @@ load(
     "int_flag",
     "string_flag",
 )
+load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
 load("@bazel_skylib//rules:expand_template.bzl", "expand_template")
 load("@rules_cc//cc:cc_import.bzl", "cc_import")
 load("@rules_cc//cc:cc_library.bzl", "cc_library")
@@ -238,6 +239,20 @@ cc_shared_library(
     deps = [":objects"],
 )
 
+copy_file(
+    name = "linker_so",
+    allow_symlink = True,
+    src = ":shared",
+    out = "libexpat.so",
+)
+
+copy_file(
+    name = "linker_dylib",
+    allow_symlink = True,
+    src = ":shared",
+    out = "libexpat.dylib",
+)
+
 filegroup(
     name = "import_library",
     srcs = [":shared"],
@@ -246,8 +261,15 @@ filegroup(
 
 cc_import(
     name = "dynamic",
-    interface_library = select({
+    interface_library = selects.with_or({
+        "@platforms//os:macos": ":linker_dylib",
         "@platforms//os:windows": ":import_library",
+        (
+            "@platforms//os:linux",
+            "@platforms//os:freebsd",
+            "@platforms//os:openbsd",
+            "@platforms//os:netbsd",
+        ): ":linker_so",
         "//conditions:default": None,
     }),
     shared_library = ":shared",

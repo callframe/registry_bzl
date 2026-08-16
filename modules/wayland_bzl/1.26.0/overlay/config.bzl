@@ -1,13 +1,12 @@
 """Configured values for Wayland's Bazel overlay."""
 
-_SOVERSION = "0"
 CURSOR_ICONDIR = "/usr/share/icons"
 
 SHARED_LIB_NAME = {
-    "client": "libwayland-client.so.%s" % _SOVERSION,
-    "cursor": "libwayland-cursor.so.%s" % _SOVERSION,
-    "egl": "libwayland-egl.so.1",
-    "server": "libwayland-server.so.%s" % _SOVERSION,
+    "client": "libwayland-client.so",
+    "cursor": "libwayland-cursor.so",
+    "egl": "libwayland-egl.so",
+    "server": "libwayland-server.so",
 }
 
 SHARED_LIB_LINKOPTS = {

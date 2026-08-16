@@ -292,20 +292,6 @@ cc_shared_library(
     deps = [":objects"],
 )
 
-copy_file(
-    name = "linker_so",
-    allow_symlink = True,
-    src = ":shared",
-    out = "libffi.so",
-)
-
-copy_file(
-    name = "linker_dylib",
-    allow_symlink = True,
-    src = ":shared",
-    out = "libffi.dylib",
-)
-
 # Windows links against an import library rather than the DLL itself.
 filegroup(
     name = "import_library",
@@ -315,15 +301,8 @@ filegroup(
 
 cc_import(
     name = "dynamic",
-    interface_library = selects.with_or({
-        "@platforms//os:macos": ":linker_dylib",
+    interface_library = select({
         "@platforms//os:windows": ":import_library",
-        (
-            "@platforms//os:linux",
-            "@platforms//os:freebsd",
-            "@platforms//os:openbsd",
-            "@platforms//os:netbsd",
-        ): ":linker_so",
         "//conditions:default": None,
     }),
     shared_library = ":shared",

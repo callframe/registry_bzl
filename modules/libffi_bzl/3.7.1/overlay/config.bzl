@@ -5,20 +5,18 @@ overrides them for MSVC. Later selects win over earlier ones.
 """
 
 _PACKAGE = "libffi"
-_SOVERSION = "8"
-_SONAME = "libffi.so.%s" % _SOVERSION
 
 SHARED_LIB_NAME = {
-    "@platforms//os:macos": "libffi.%s.dylib" % _SOVERSION,
+    "@platforms//os:macos": "libffi.dylib",
     "@platforms//os:windows": "libffi.dll",
-    "//conditions:default": _SONAME,
+    "//conditions:default": "libffi.so",
 }
 
 # Bazel names the file but records no SONAME of its own.
 SHARED_LIB_LINKOPTS = {
     ("@platforms//os:macos", "@platforms//os:windows"): [],
     "//conditions:default": [
-        "-Wl,-soname," + _SONAME,
+        "-Wl,-soname,libffi.so",
         "-Wl,--version-script,$(location :libffi_map)",
     ],
 }

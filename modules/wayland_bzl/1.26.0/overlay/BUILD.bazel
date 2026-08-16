@@ -1,5 +1,4 @@
 load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
-load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
 load("@rules_cc//cc:cc_import.bzl", "cc_import")
 load("@rules_cc//cc:cc_library.bzl", "cc_library")
 load("@rules_cc//cc:cc_shared_library.bzl", "cc_shared_library")
@@ -25,11 +24,6 @@ string_flag(
 config_setting(
     name = "static_linkage",
     flag_values = {":linkage": "static"},
-)
-
-config_setting(
-    name = "dynamic_linkage",
-    flag_values = {":linkage": "dynamic"},
 )
 
 # --- generated config ------------------------------------------------------
@@ -81,58 +75,26 @@ cc_shared_library(
     deps = ["//egl:objects"],
 )
 
-copy_file(
-    name = "client_linker_so",
-    allow_symlink = True,
-    src = ":client_shared",
-    out = "libwayland-client.so",
-)
-
-copy_file(
-    name = "server_linker_so",
-    allow_symlink = True,
-    src = ":server_shared",
-    out = "libwayland-server.so",
-)
-
-copy_file(
-    name = "cursor_linker_so",
-    allow_symlink = True,
-    src = ":cursor_shared",
-    out = "libwayland-cursor.so",
-)
-
-copy_file(
-    name = "egl_linker_so",
-    allow_symlink = True,
-    src = ":egl_shared",
-    out = "libwayland-egl.so",
-)
-
 cc_import(
     name = "client_dynamic",
-    interface_library = ":client_linker_so",
     shared_library = ":client_shared",
     deps = ["//src:client_headers"],
 )
 
 cc_import(
     name = "server_dynamic",
-    interface_library = ":server_linker_so",
     shared_library = ":server_shared",
     deps = ["//src:server_headers"],
 )
 
 cc_import(
     name = "cursor_dynamic",
-    interface_library = ":cursor_linker_so",
     shared_library = ":cursor_shared",
     deps = ["//cursor:headers"],
 )
 
 cc_import(
     name = "egl_dynamic",
-    interface_library = ":egl_linker_so",
     shared_library = ":egl_shared",
     deps = ["//egl:headers"],
 )

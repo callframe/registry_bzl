@@ -4,18 +4,15 @@ load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
 load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
 load("@rules_cc//cc/common:cc_info.bzl", "CcInfo")
 
-_SOVERSION = "1"
-_SONAME = "libexpat.so.%s" % _SOVERSION
-
 SHARED_LIB_NAME = {
-    "@platforms//os:macos": "libexpat.%s.dylib" % _SOVERSION,
+    "@platforms//os:macos": "libexpat.dylib",
     "@platforms//os:windows": "libexpat.dll",
-    "//conditions:default": _SONAME,
+    "//conditions:default": "libexpat.so",
 }
 
 SHARED_LIB_LINKOPTS = {
     ("@platforms//os:macos", "@platforms//os:windows"): [],
-    "//conditions:default": ["-Wl,-soname," + _SONAME],
+    "//conditions:default": ["-Wl,-soname,libexpat.so"],
 }
 
 EXPAT_DEF_BY_ATTR_INFO = {

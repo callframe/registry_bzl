@@ -8,9 +8,9 @@
   },
   "patch_strip": 1,
   "overlay": {
-    "BUILD.bazel": "sha256-0UbMKrRF+xEmCTPyx8stFYf6JZslFRDhYfXtqqJjueI=",
+    "BUILD.bazel": "sha256-lHBu6jO8ZZuv6fTQ8yZvahOL1cWrg0jb6Nwwb/Nkpag=",
     "MODULE.bazel": "sha256-wPZGiZHsYiBfCkhA2qmM0b3NohMqU5oRhh+NDMJ4JAI=",
-    "config.bzl": "sha256-N/bUGpidKRwi/FkFaug0ddIkpSOjHeSQ8ENcZZr3JCA=",
+    "config.bzl": "sha256-iADRNnxh9rUiSbQ4J+wZHDm8lHzGqIydd8R69HJh0pw=",
     "cursor/BUILD.bazel": "sha256-qTMQNaw+dZtquE6tLonWR+DzBMB71JsG6wAnQ1oMWLs=",
     "egl/BUILD.bazel": "sha256-ZlTBdu8tFEM5pMmCwAGxisG9IXQoGH46ne2FOTeDT8s=",
     "protocol/BUILD.bazel": "sha256-tmiOXvqM7FiroBodarKTv+h50pih89wTXQzCF9DX23A=",

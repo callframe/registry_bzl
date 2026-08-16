@@ -9,6 +9,11 @@ load(
 UNSUPPORTED = """%s supports Wayland cursor on Linux.
 BSD needs epoll-shim, which is not provided by this registry module.""" % module_name()
 
+exports_files(
+    ["wayland-cursor.h"],
+    visibility = ["//visibility:public"],
+)
+
 cc_library(
     name = "headers",
     hdrs = ["wayland-cursor.h"],
@@ -35,5 +40,5 @@ cc_library(
         "//:config",
         "//src:client_objects",
     ],
-    visibility = ["//visibility:public"],
+    visibility = ["//:__pkg__"],
 )

@@ -129,6 +129,11 @@ PUBLIC_HEADERS = [
     "lib/expat_external.h",
 ]
 
+exports_files(
+    PUBLIC_HEADERS,
+    visibility = ["//visibility:public"],
+)
+
 INTERNAL_HEADERS = [
     "lib/ascii.h",
     "lib/asciitab.h",

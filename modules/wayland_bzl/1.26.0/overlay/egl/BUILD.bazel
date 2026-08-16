@@ -3,6 +3,15 @@ load("//:config.bzl", "COMMON_COPTS", "LINUX_SRCS")
 
 UNSUPPORTED = "%s supports Wayland EGL on Linux." % module_name()
 
+exports_files(
+    [
+        "wayland-egl-backend.h",
+        "wayland-egl-core.h",
+        "wayland-egl.h",
+    ],
+    visibility = ["//visibility:public"],
+)
+
 cc_library(
     name = "headers",
     hdrs = [
@@ -22,5 +31,5 @@ cc_library(
     ] + select(LINUX_SRCS, no_match_error = UNSUPPORTED),
     copts = COMMON_COPTS,
     deps = [":headers"],
-    visibility = ["//visibility:public"],
+    visibility = ["//:__pkg__"],
 )

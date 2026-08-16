@@ -6,6 +6,7 @@ genrule(
     outs = ["wayland-client-protocol.h"],
     cmd = "$(location //src:wayland-scanner) -s client-header $(location wayland.xml) $@",
     tools = ["//src:wayland-scanner"],
+    visibility = ["//visibility:public"],
 )
 
 genrule(
@@ -22,6 +23,7 @@ genrule(
     outs = ["wayland-server-protocol.h"],
     cmd = "$(location //src:wayland-scanner) -s server-header $(location wayland.xml) $@",
     tools = ["//src:wayland-scanner"],
+    visibility = ["//visibility:public"],
 )
 
 genrule(

@@ -18,9 +18,21 @@ expand_template(
     out = "wayland-version.h",
     substitutions = wayland_version_substitutions(module_version()),
     template = "wayland-version.h.in",
+    visibility = ["//visibility:public"],
 )
 
 # --- headers ---------------------------------------------------------------
+
+exports_files(
+    [
+        "wayland-client-core.h",
+        "wayland-client.h",
+        "wayland-server-core.h",
+        "wayland-server.h",
+        "wayland-util.h",
+    ],
+    visibility = ["//visibility:public"],
+)
 
 cc_library(
     name = "base_headers",
@@ -141,7 +153,10 @@ cc_library(
         "@libffi_bzl//:libffi",
     ],
     implementation_deps = [":internal_headers"],
-    visibility = ["//visibility:public"],
+    visibility = [
+        "//:__pkg__",
+        "//cursor:__pkg__",
+    ],
 )
 
 cc_library(
@@ -166,5 +181,5 @@ cc_library(
         "@libffi_bzl//:libffi",
     ],
     implementation_deps = [":internal_headers"],
-    visibility = ["//visibility:public"],
+    visibility = ["//:__pkg__"],
 )

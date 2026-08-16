@@ -158,6 +158,7 @@ expand_template(
                     select(FFI_H_BY_WINDOWS_CPU) |
                     select(FFI_H_MACOS_ARM64),
     template = "include/ffi.h.in",
+    visibility = ["//visibility:public"],
 )
 
 expand_template(
@@ -176,6 +177,7 @@ copy_file(
     name = "ffitarget_h",
     src = selects.with_or(FFITARGET_H_BY_CPU, no_match_error = UNSUPPORTED),
     out = "include/ffitarget.h",
+    visibility = ["//visibility:public"],
 )
 
 # --- MSVC assembly ---------------------------------------------------------

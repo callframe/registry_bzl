@@ -36,14 +36,17 @@ config_setting(
 generate_config_h(
     name = "config_h",
     out = "config.h",
-    visibility = ["//:__subpackages__"],
+    visibility = ["//src:__pkg__"],
     version = module_version(),
 )
 
 cc_library(
     name = "config",
     hdrs = [":config_h"],
-    visibility = ["//visibility:public"],
+    visibility = [
+        "//cursor:__pkg__",
+        "//src:__pkg__",
+    ],
 )
 
 # --- shared libraries ------------------------------------------------------

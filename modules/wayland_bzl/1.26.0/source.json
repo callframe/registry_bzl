@@ -8,13 +8,13 @@
   },
   "patch_strip": 1,
   "overlay": {
-    "BUILD.bazel": "sha256-3MoIrkVM6gBt1Lfb9ZjCAzWSm73eJo1fuwto7o9FP1Y=",
+    "BUILD.bazel": "sha256-7sL7cHpd7I4o6/zBFrNSSrm0OzK706mmTuOgK6mA0Wc=",
     "MODULE.bazel": "sha256-wPZGiZHsYiBfCkhA2qmM0b3NohMqU5oRhh+NDMJ4JAI=",
     "config.bzl": "sha256-N/bUGpidKRwi/FkFaug0ddIkpSOjHeSQ8ENcZZr3JCA=",
-    "cursor/BUILD.bazel": "sha256-Eoxq1/B7mSon3sO6UDJ9yb+QW9OFiGsaRdQlrNcW01k=",
-    "egl/BUILD.bazel": "sha256-6FTyk2qgXoM3wJhc0RDPxRyE0jFF2BNx3FwsBrxQGKw=",
-    "protocol/BUILD.bazel": "sha256-8qNFz9/2XbKyHPg3ugfha1XnqoSQRLFHAmAnq4hkuBc=",
-    "src/BUILD.bazel": "sha256-Bk6CrKSmjLffa+UHO8EytYjvY4E0qNPvpuRs7KTPLSY=",
+    "cursor/BUILD.bazel": "sha256-qTMQNaw+dZtquE6tLonWR+DzBMB71JsG6wAnQ1oMWLs=",
+    "egl/BUILD.bazel": "sha256-ZlTBdu8tFEM5pMmCwAGxisG9IXQoGH46ne2FOTeDT8s=",
+    "protocol/BUILD.bazel": "sha256-tmiOXvqM7FiroBodarKTv+h50pih89wTXQzCF9DX23A=",
+    "src/BUILD.bazel": "sha256-p+KuxBSSWeXfkuD036VPV7HjZp/1thFT+QsSNt9DZy4=",
     "templates.bzl": "sha256-SFi3IhUowFVJl/sKEekzUtm8kUeymMLjcUFBS3u+A6Q="
   }
 }
